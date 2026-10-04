@@ -1,0 +1,6 @@
+.sites-runtime/
+*.tgz
+*.tar.gz
+.env
+.env.*
+!README.md

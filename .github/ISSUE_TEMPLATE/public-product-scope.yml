@@ -1,0 +1,37 @@
+name: Procedimento de produto público
+description: Descrever uma necessidade pública de ajuda, sem dados privados ou contratação.
+title: "[Product scope] "
+body:
+  - type: markdown
+    attributes:
+      value: "Esta conversa será pública, vinculada ao seu usuário GitHub. Não envie contatos pessoais, dados de clientes, arquivos privados, credenciais ou acesso. A avaliação não é contratação, proposta ou pagamento."
+  - type: input
+    id: product
+    attributes:
+      label: URL pública do produto
+      placeholder: https://exemplo.com
+    validations:
+      required: true
+  - type: textarea
+    id: procedure
+    attributes:
+      label: Procedimento que precisa de ajuda
+      description: Descreva somente fatos já públicos.
+    validations:
+      required: true
+  - type: textarea
+    id: gap
+    attributes:
+      label: Lacuna e resultado esperado
+      description: O que precisa ficar claro para quem usa o produto?
+    validations:
+      required: true
+  - type: checkboxes
+    id: public_scope
+    attributes:
+      label: Limites
+      options:
+        - label: Entendo que o conteúdo e meu usuário ficam públicos; não incluí informações privadas.
+          required: true
+        - label: Entendo que esta avaliação não abre contratação ou cobrança.
+          required: true
