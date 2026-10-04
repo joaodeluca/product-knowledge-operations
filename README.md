@@ -2,7 +2,9 @@
 
 Operação de conhecimento para produtos de software, em validação: aprender procedimentos, preparar ajuda conferida, incorporar sob autorização e acompanhar mudanças. Contratação e cobrança ainda não estão abertas. Nenhum cliente, redução de dúvidas ou economia comprovados.
 
-Este repositório contém a apresentação e uma amostra editorial original e independente. Os dois procedimentos observados no Excalidraw não constituem central completa; backup em arquivo e restauração desse arquivo ficaram pendentes. Não há vínculo com o fornecedor. As imagens são da cena fictícia própria.
+Este repositório contém a apresentação e amostras editoriais originais e independentes. [Transferir e recuperar um projeto OpenRefine](docs/openrefine/TRANSFER.md) entrega fonte fictícia, CSVs, arquivo real de projeto e comparador específico. Importação inicial pela interface; transformação, exportação e recuperação pela API local. A conferência independente cobre recuperação por API em outro workspace. CSV após desfazer perdeu espaços externos: o aceite integral original falhou, mesmo com células recuperadas. Não cobre toda a produção inicial pela interface nem prova vantagem comercial.
+
+ Os dois procedimentos observados no Excalidraw não constituem central completa; backup em arquivo e restauração desse arquivo ficaram pendentes. Não há vínculo com o fornecedor. As imagens são da cena fictícia própria.
 
 ## Descrever um escopo público
 
@@ -13,7 +15,9 @@ O operador avalia necessidade, entradas disponíveis, possibilidade de reproduzi
 ## Conteúdo
 
 - `dist/index.html`: serviço, ciclo, limites e preparação local de escopo.
-- `dist/sample.html`: dois procedimentos observados e instruções retidas.
+- `dist/sample.html`: ensaio anterior parcial, preservado.
+- `dist/openrefine.html`: nova ajuda de transferência/recuperação, arquivos próprios reais e limites.
+- `docs/openrefine/TRANSFER.md`: guia completo e correções após revisão.
 - `.github/ISSUE_TEMPLATE/`: entrada voluntária de escopo público.
 
 O formulário do site somente prepara uma página de revisão no GitHub. Não envia conteúdo automaticamente, não grava formulário, não usa API de IA nem coleta analytics. O site não é hospedado no GitHub Pages como loja ou serviço comercial.

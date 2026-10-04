@@ -1,0 +1,68 @@
+{
+  "product": "OpenRefine 3.10.0",
+  "records": "48 original fictitious records",
+  "execution": "initial textual import and creation UI; effective transform/export/restore API of real local product",
+  "independent_reproduction": "project restore, undo and cell comparisons by separate Codex agent; not independent human or full initial production",
+  "results": {
+    "filtered_csv": {
+      "rows": 16,
+      "comparison": "pass"
+    },
+    "full_csv": {
+      "rows": 48,
+      "comparison": "pass"
+    },
+    "restored_csv": {
+      "rows": 48,
+      "comparison": "pass"
+    },
+    "undo_csv": {
+      "rows": 48,
+      "comparison": "fail_external_whitespace_removed"
+    },
+    "undo_project_cells": {
+      "rows": 48,
+      "cells": 192,
+      "comparison": "pass"
+    }
+  },
+  "original_full_acceptance": "failed; criterion not changed",
+  "customer": false,
+  "payment": false,
+  "commercial_benefit_measured": false,
+  "manual_baseline_measured": false,
+  "files": {
+    "docs/openrefine/TRANSFER.md": {
+      "bytes": 7817,
+      "sha256": "5b182f5386b3790a67b988fde8f4529c6aeba44bd2bd865a12c71a7930f42527"
+    },
+    "dist/openrefine.html": {
+      "bytes": 4984,
+      "sha256": "015fa7f860e7652d319344c2ab4eec0ae4891db453159afdfc7c22b9d5955e35"
+    },
+    "dist/openrefine/files/check_exports.py": {
+      "bytes": 5054,
+      "sha256": "e7145548c3fa1d979b73976cce1e0522b335fe29f2b64cebe96a3c25cf435468"
+    },
+    "dist/openrefine/files/filtered.csv": {
+      "bytes": 861,
+      "sha256": "b6d6c73401ff2416638313976d4d9d45156eac0f1baabc1b9613909949ce1df8"
+    },
+    "dist/openrefine/files/full.csv": {
+      "bytes": 2514,
+      "sha256": "f1b5676fa9e509faa3271132e8a1caab63128406f65ca853944532ed27704691"
+    },
+    "dist/openrefine/files/handoff.openrefine.tar.gz": {
+      "bytes": 2708,
+      "sha256": "d93a1244139e1883c9cc00a1d9da5cef58ce2621d412acae3033c75c52dc16a6"
+    },
+    "dist/openrefine/files/source.csv": {
+      "bytes": 2755,
+      "sha256": "95a95c965ffa599ade2e9b065f5283d2e6c96e89a41e1b1001988b6aec73ff42"
+    },
+    "dist/openrefine/history.png": {
+      "bytes": 65113,
+      "sha256": "8f7d90873d0b8a3db1a43fd0d87bb60866ffd5ebc90be5ce8feda829ed27f0ea"
+    }
+  }
+}

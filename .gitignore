@@ -4,3 +4,6 @@
 .env
 .env.*
 !README.md
+
+# Somente o backup fictício original desta amostra, conferido antes de publicar.
+!dist/openrefine/files/handoff.openrefine.tar.gz
