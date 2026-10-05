@@ -40,6 +40,10 @@ Clique **Desfazer**. A flecha deve reaparecer ligada às caixas.
 
 **Desfazer** ajuda a corrigir uma edição recente. Ele não substitui uma cópia de segurança e não garante recuperar armazenamento apagado, outra sessão ou um arquivo sobrescrito. Antes de alterar um trabalho importante, guarde uma nova cópia do arquivo editável.
 
+## Antes de usar os arquivos de exemplo
+
+Os downloads desta página contêm o desenho fictício mostrado acima, não uma cópia do seu trabalho. Guarde seu desenho atual antes de abrir o exemplo. Para testar a recuperação, use uma sessão vazia e conserve o arquivo original sem sobrescrevê-lo. Depois de editar, salve uma nova cópia com outro nome e confira qual arquivo será usado na próxima abertura.
+
 ## Arquivos e alcance da conferência
 
 As imagens e o arquivo editável desta página são próprios. Você pode baixar os arquivos originais nas ligações acima. O [manifesto público](../../dist/excalidraw/files/manifest.json) identifica os quatro arquivos. Também estão disponíveis as capturas de [exclusão](https://github.com/joaodeluca/product-knowledge-operations/releases/download/help-2026-10-05/connector-deleted.png) e [recuperação](https://github.com/joaodeluca/product-knowledge-operations/releases/download/help-2026-10-05/connector-recovered.png). Essas capturas registram esta amostra; não são garantia geral do produto.
