@@ -6,6 +6,8 @@ Este repositório contém a apresentação e amostras editoriais originais e ind
 
  Os dois procedimentos observados no Excalidraw não constituem central completa; backup em arquivo e restauração desse arquivo ficaram pendentes. Não há vínculo com o fornecedor. As imagens são da cena fictícia própria.
 
+[Validar a configuração correta do Renovate](docs/renovate/VALIDATION.md) responde a uma dúvida pública específica com exemplos próprios executados no validador oficial. Não inclui implantação, autenticação ou manutenção do bot.
+
 ## Descrever um escopo público
 
 [Abrir avaliação de procedimento](https://github.com/joaodeluca/product-knowledge-operations/issues/new?template=public-product-scope.yml). Somente URL pública, procedimento e lacuna. O conteúdo e a autoria GitHub serão públicos. Não envie contatos pessoais, dados de clientes, arquivos privados, segredos ou acesso. Não é contratação ou promessa de entrega. O formulário exige sessão GitHub; nenhuma conta é criada por este projeto.

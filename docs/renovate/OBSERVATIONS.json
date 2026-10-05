@@ -1,0 +1,153 @@
+{
+  "observed_at": "2026-10-05T14:07:34.425246+00:00",
+  "package": "renovate@44.135.0",
+  "node": "24.15.0",
+  "package_integrity": "sha512-WQN+X8QjgDrrVC2AEd2wPuCrKumpQf4j9vjAtzK+VbiDubyGi6OzqPttZRhmboJWNZu5W4zuEK3IdDAAGhaR4A==",
+  "entry_sha256": "02fca473b2fdbbdd3f31dedcda65d804eaac4702f0ce0efd209df15cb3b93c6f",
+  "examples": {
+    "global-invalid-type.json": "96282e4fe654c1d1bf67fb01f0f1654a9878c1a4c42505acddddd841681b5b0e",
+    "global-valid.json": "7f8b299da27ffa67f48dff6edb7298fd826bc570759f09870ff1172f5237130b",
+    "migration.json": "e881ce8743583bf2b169f9c1b52d5a43f2f3686cd76cdcad7dd3dee7451d9117",
+    "repo-invalid-type.json": "96282e4fe654c1d1bf67fb01f0f1654a9878c1a4c42505acddddd841681b5b0e",
+    "explicit-global-in-repo.json": "f6620fe9dd0889ffba1dcf3627fd6618b0fa04487b86a54f46c4570c68423f0d",
+    "repo-valid.json": "8582c855396331bfbbfeaee8c2d3bd748e2f0d90b108ea43be8a5c3044b76365",
+    "global-list.json": "f6620fe9dd0889ffba1dcf3627fd6618b0fa04487b86a54f46c4570c68423f0d"
+  },
+  "runs": [
+    {
+      "file": "repo-valid.json",
+      "exit": 0,
+      "validator_args": [
+        "--no-global",
+        "repo-valid.json"
+      ]
+    },
+    {
+      "file": "repo-valid.json",
+      "exit": 0,
+      "validator_args": [
+        "--no-global",
+        "--strict",
+        "repo-valid.json"
+      ]
+    },
+    {
+      "file": "repo-invalid-type.json",
+      "exit": 1,
+      "validator_args": [
+        "--no-global",
+        "repo-invalid-type.json"
+      ]
+    },
+    {
+      "file": "repo-invalid-type.json",
+      "exit": 1,
+      "validator_args": [
+        "--no-global",
+        "--strict",
+        "repo-invalid-type.json"
+      ]
+    },
+    {
+      "file": "global-invalid-type.json",
+      "exit": 1,
+      "validator_args": [
+        "global-invalid-type.json"
+      ]
+    },
+    {
+      "file": "global-invalid-type.json",
+      "exit": 1,
+      "validator_args": [
+        "--strict",
+        "global-invalid-type.json"
+      ]
+    },
+    {
+      "file": "global-valid.json",
+      "exit": 0,
+      "validator_args": [
+        "global-valid.json"
+      ]
+    },
+    {
+      "file": "global-valid.json",
+      "exit": 0,
+      "validator_args": [
+        "--strict",
+        "global-valid.json"
+      ]
+    },
+    {
+      "file": "explicit-global-in-repo.json",
+      "exit": 1,
+      "validator_args": [
+        "--no-global",
+        "explicit-global-in-repo.json"
+      ]
+    },
+    {
+      "file": "explicit-global-in-repo.json",
+      "exit": 1,
+      "validator_args": [
+        "--no-global",
+        "--strict",
+        "explicit-global-in-repo.json"
+      ]
+    },
+    {
+      "file": "global-list.json",
+      "exit": 0,
+      "validator_args": [
+        "global-list.json"
+      ]
+    },
+    {
+      "file": "global-list.json",
+      "exit": 0,
+      "validator_args": [
+        "--strict",
+        "global-list.json"
+      ]
+    },
+    {
+      "file": "migration.json",
+      "exit": 0,
+      "validator_args": [
+        "migration.json"
+      ]
+    },
+    {
+      "file": "migration.json",
+      "exit": 1,
+      "validator_args": [
+        "--strict",
+        "migration.json"
+      ]
+    },
+    {
+      "file": null,
+      "exit": 0,
+      "validator_args": []
+    }
+  ],
+  "conditions": [
+    "Original synthetic inputs only",
+    "Clean environment and temporary working directory",
+    "Installation scripts disabled; RE2 unavailable, no regex evaluation certified",
+    "No bot run, App installation, tokens, real repository changes or deployment"
+  ],
+  "not_demonstrated": [
+    "User success on reported configuration",
+    "Full onboarding",
+    "Economic advantage",
+    "Client operation or payment"
+  ],
+  "executable": "renovate-config-validator from renovate@44.135.0",
+  "environment_exact": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "LOG_FORMAT": "json",
+    "LOG_LEVEL": "info"
+  },
+  "cwd": "Fresh temporary directory for every run, containing only selected synthetic input or empty for no-files case"
+}
