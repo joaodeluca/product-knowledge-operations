@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-05",
+  "kind": "original fictitious personal scene; no customer data",
+  "files": [
+    {
+      "path": "diagram.png",
+      "bytes": 13871,
+      "sha256": "5f40a7af17959bff5f3eb7f4618cf05f01357e8b9a9fd7045a61230192b29593"
+    },
+    {
+      "path": "connector-deleted.png",
+      "bytes": 61002,
+      "sha256": "eb8f879db8c5f9797c8bb34607d8da55f6a57b803ae8991b4fc91d4fb8530178"
+    },
+    {
+      "path": "connector-recovered.png",
+      "bytes": 89036,
+      "sha256": "8b47250656e3590d43cb73c8980bdcf4b4cd75806d49abb1bb9a0d3bf5bd03dc"
+    },
+    {
+      "path": "scene-original.excalidraw",
+      "bytes": 5461,
+      "sha256": "7a7ec0a9001392aa1d61815c4858182407a9f555b04b880dc2d2796cbec14dc9"
+    }
+  ]
+}

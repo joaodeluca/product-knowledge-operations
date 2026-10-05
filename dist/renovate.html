@@ -1,0 +1,38 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Renovate: validar o arquivo certo antes de implantar · Product Knowledge Operations</title><link rel="stylesheet" href="styles.css"></head><body><a class="skip" href="#main">Pular para o procedimento</a><header><a class="brand" href="index.html">Product Knowledge<br><span>Operations</span></a><nav aria-label="Principal"><a href="library.html">Biblioteca</a><a href="index.html#escopo">Descrever um escopo público</a></nav></header><main id="main" class="sample-main guide"><p class="eyebrow">AJUDA INDEPENDENTE · AMOSTRA PESSOAL</p><h1>Renovate: validar o arquivo certo antes de implantar</h1>
+<p>Este procedimento resolve uma decisão estreita: escolher o modo do validador e interpretar sua saída. Foi conferido em 05/10/2026 com Renovate <strong>44.135.0</strong>, Node <strong>24.15.0</strong> e configurações fictícias próprias. Não é documentação oficial nem implantação realizada para um cliente.</p>
+<p>A motivação foi uma dúvida pública de adoção na <a href="https://github.com/renovatebot/renovate/discussions/41411" rel="noreferrer noopener">discussão do fornecedor</a>. Não usamos arquivos ou credenciais do participante e não afirmamos resolver sua instalação.</p>
+<h2>Checklist para o responsável</h2>
+<ol>
+<li><strong>Escolha quem opera o bot.</strong> A opção hospedada e o self-hosting têm responsabilidades diferentes. Confirme instalação, repositórios permitidos e responsável por atualizações antes de executar. A <a href="https://docs.renovatebot.com/getting-started/installing-onboarding/" rel="noreferrer noopener">orientação oficial de onboarding</a> é a referência para esse fluxo. Este guia para na validação local; não concede permissões.</li>
+<li><strong>Classifique o arquivo.</strong> Configuração da instância self-hosted é global. Configuração de um repositório ou preset compartilhado deve ser validada com <code>--no-global</code> quando o nome é passado explicitamente. O nome <code>default.json</code> sozinho não escolhe essa categoria. <a href="https://docs.renovatebot.com/config-validation/" rel="noreferrer noopener">Referência oficial de validação</a>.</li>
+<li><strong>Confirme o contexto.</strong> Registre versão, arquivo e hash. Variáveis <code>RENOVATE_*</code> e <code>config.js</code> existentes podem influenciar a leitura; use uma pasta de trabalho controlada. Não execute configurações JavaScript recebidas de desconhecidos.</li>
+<li><strong>Leia o diagnóstico, além do código de saída.</strong> Confirme que o arquivo foi realmente encontrado e qual modo foi usado. Na amostra sem arquivos, a ferramenta devolveu <strong>0</strong>, sem validar qualquer configuração.</li>
+<li><strong>Trate migração explicitamente.</strong> <code>--strict</code> também exige ausência de migração pendente. Uma configuração antiga pode retornar 0 sem essa opção e 1 com ela. Isso não testa permissões, dependências reais ou atualização de branches.</li>
+<li><strong>Entregue a decisão ao operador.</strong> Guarde modo, versão, hash, saída e alterações necessárias. A instalação só está pronta após observar o comportamento esperado no ambiente autorizado; essa etapa não foi executada aqui.</li>
+</ol>
+<h2>Comandos após instalar a versão escolhida</h2>
+<p>Execute a partir de uma pasta controlada, utilizando o binário dessa instalação:</p>
+<pre><code>
+# Repositório ou preset compartilhado
+
+renovate-config-validator --no-global --strict renovate.json
+
+
+
+# Instância self-hosted
+
+renovate-config-validator --strict global.json
+
+</code></pre>
+<h2>O que mudou nos resultados observados</h2>
+<p>Os <a href="https://github.com/joaodeluca/product-knowledge-operations/tree/main/docs/renovate/examples" rel="noreferrer noopener">exemplos</a> são pequenos controles próprios; os hashes e comandos estão em <a href="https://github.com/joaodeluca/product-knowledge-operations/blob/main/docs/renovate/OBSERVATIONS.json" rel="noreferrer noopener">OBSERVATIONS.json</a>.</p>
+<div class="guide-table"><table><thead><tr><th>Entrada própria</th><th>Modo global</th><th>Modo de repositório</th><th>Decisão</th></tr></thead><tbody>
+<tr><td>Lista fictícia <code>repositories</code></td><td>0</td><td>1</td><td>A lista pertence à instância, não ao arquivo do repositório.</td></tr>
+<tr><td><code>onboarding</code> com texto no lugar de booleano</td><td>1</td><td>1</td><td>Os diagnósticos diferem: tipo no modo global, escopo no modo de repositório.</td></tr>
+<tr><td><code>automerge: false</code></td><td>Não executado</td><td>0</td><td>Controle válido do modo de repositório.</td></tr>
+<tr><td><code>onboarding: false</code> e <code>platform: github</code></td><td>0</td><td>Não executado</td><td>Controle válido global, sem autenticação conferida.</td></tr>
+</tbody></table></div>
+<p>O controle antigo <code>dryRun: true</code> retornou 0 normalmente e 1 com <code>--strict</code>; o validador apontou migração para <code>dryRun: &quot;full&quot;</code>. Na pasta vazia, o comando sem argumentos retornou 0 sem arquivos validados. Os seis casos iniciais foram conferidos com e sem <code>--strict</code>; os três controles adicionais foram definidos antes de suas execuções.</p>
+<h2>Limites da conferência</h2>
+<p>A instalação foi temporária, com scripts de instalação desabilitados. RE2 não carregou e houve aviso de fallback: <strong>não foi certificada validação de expressões regulares</strong>. Não usamos presets remotos nem executamos o bot. O comportamento de uma versão antiga mencionada na discussão não foi reproduzido.</p>
+<p>A documentação oficial já oferece essas regras. A contribuição aqui é reuni-las numa decisão com exemplos executados; não medimos economia de tempo frente a um operador competente. Não há cliente, manutenção contratada, aceite externo ou vantagem comercial demonstrados. Nenhum arquivo do fornecedor é redistribuído neste diretório.</p><p><a href="library.html">Voltar à biblioteca</a> · <a href="sample.html">Ensaio histórico parcial de 04/10</a></p></main><footer><span>Product Knowledge Operations · João de Luca</span><span>Informativo gratuito · sem loja ou checkout</span></footer></body></html>
