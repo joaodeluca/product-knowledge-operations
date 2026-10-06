@@ -2,7 +2,7 @@
 
 Operação de conhecimento para produtos de software, em validação: aprender procedimentos, preparar ajuda conferida, incorporar sob autorização e acompanhar mudanças. Contratação e cobrança ainda não estão abertas. Nenhum cliente, redução de dúvidas ou economia comprovados.
 
-**[Ler os três guias e baixar os arquivos originais](docs/README.md)** — leitura pública pelo próprio GitHub, sem depender de um servidor local.
+**[Abrir a biblioteca de ajuda](https://joaodeluca.github.io/product-knowledge-operations/library.html)** — três guias e arquivos próprios disponíveis por HTTPS, sem depender do Mac. A [leitura dos guias no GitHub](docs/README.md) permanece como alternativa.
 
 Este repositório contém a apresentação e amostras editoriais originais e independentes. [Transferir e recuperar um projeto OpenRefine](docs/openrefine/TRANSFER.md) entrega fonte fictícia, CSVs, arquivo real de projeto e comparador específico. Importação inicial pela interface; transformação, exportação e recuperação pela API local. A conferência independente cobre recuperação por API em outro workspace. CSV após desfazer perdeu espaços externos: o aceite integral original falhou, mesmo com células recuperadas. Não cobre toda a produção inicial pela interface nem prova vantagem comercial.
 
@@ -27,7 +27,7 @@ O operador avalia necessidade, entradas disponíveis, possibilidade de reproduzi
 - `docs/openrefine/TRANSFER.md`: guia completo e correções após revisão.
 - `.github/ISSUE_TEMPLATE/`: entrada voluntária de escopo público.
 
-O formulário do site somente prepara uma página de revisão no GitHub. Não envia conteúdo automaticamente, não grava formulário, não usa API de IA nem coleta analytics. GitHub Pages está configurado, mas a execução inicial falhou antes de executar qualquer etapa: o serviço não atribuiu um runner. Essa falha inicial está preservada. A [biblioteca legível diretamente no GitHub](docs/README.md) e seus anexos oferecem um caminho público independente da hospedagem. Uma nova publicação só deve ser declarada concluída após conferir o endereço externo e os arquivos da revisão implantada. A entrega usa a apresentação e os arquivos próprios já selecionados de `dist/`, com os três leitores gerados a partir dos guias revisados em `docs/`. Nenhum banco, sessão, pacote operacional ou protocolo privado é enviado. Não é loja ou serviço comercial aberto.
+O formulário do site somente prepara uma página de revisão no GitHub. Não envia conteúdo automaticamente, não grava formulário, não usa API de IA nem coleta analytics. A biblioteca está hospedada no GitHub Pages. A execução inicial falhou antes de executar qualquer etapa por ausência de runner; essa falha permanece no histórico. Após a recuperação do serviço, a [execução 37474065025](https://github.com/joaodeluca/product-knowledge-operations/actions/runs/37474065025) implantou a revisão `0b854731dbe485ddd6c0ca66f6d1d7d5a21708b7`. O endereço externo e os 26 arquivos foram conferidos contra a entrega congelada dessa revisão. Publicações futuras exigem uma nova conferência da revisão efetivamente implantada. A entrega usa a apresentação e os arquivos próprios já selecionados de `dist/`, com os três leitores gerados a partir dos guias revisados em `docs/`. Nenhum banco, sessão, pacote operacional ou protocolo privado é enviado. Não é loja ou serviço comercial aberto.
 
 Projeto pessoal de João de Luca. Sem recursos de outra empresa. Implementação estática original; não contém protocolo privado, dados de clientes ou credenciais. Imagens e conteúdo de amostra não devem ser apresentados como documentação oficial do Excalidraw.
 
@@ -56,8 +56,10 @@ a revisão editorial e os limites de cada ensaio continuam necessários.
 A publicação de Pages é manual e exige o SHA completo da revisão conferida.
 O workflow gera e confere novamente a entrega antes de enviar somente essa
 pasta. Não há publicação automática em cada commit. A implantação inicial
-falhou antes de executar qualquer etapa. O incidente de Actions/Pages teve
-resolução informada pelo GitHub; isso permite uma tentativa delimitada, mas não
-comprova a implantação desta entrega. A leitura nativa dos guias no GitHub
-permanece disponível. Não foram
-criadas outra conta, hospedagem, assinatura, agenda ou promessa comercial.
+falhou antes de executar qualquer etapa. Após a resolução do incidente de
+Actions/Pages, uma execução delimitada da revisão conferida concluiu a
+implantação; a biblioteca HTTPS, os arquivos e quatro downloads foram
+verificados em 06/10/2026. A leitura nativa dos guias no GitHub permanece
+disponível. Essa entrega não comprova audiência, operação de comprador,
+aceite externo ou benefício econômico. Não foram criadas outra conta,
+assinatura, agenda ou promessa comercial.
