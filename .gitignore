@@ -7,3 +7,7 @@
 
 # Somente o backup fictício original desta amostra, conferido antes de publicar.
 !dist/openrefine/files/handoff.openrefine.tar.gz
+
+# Arquivos locais produzidos pelos controles Python; não são conteúdo público.
+__pycache__/
+*.py[cod]

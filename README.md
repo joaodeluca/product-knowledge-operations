@@ -27,6 +27,37 @@ O operador avalia necessidade, entradas disponíveis, possibilidade de reproduzi
 - `docs/openrefine/TRANSFER.md`: guia completo e correções após revisão.
 - `.github/ISSUE_TEMPLATE/`: entrada voluntária de escopo público.
 
-O formulário do site somente prepara uma página de revisão no GitHub. Não envia conteúdo automaticamente, não grava formulário, não usa API de IA nem coleta analytics. GitHub Pages está configurado, mas a execução inicial falhou antes de executar qualquer etapa: o serviço não atribuiu um runner. A publicação do site não está concluída. A [biblioteca legível diretamente no GitHub](docs/README.md) e seus anexos oferecem o caminho público disponível enquanto esse impedimento persiste. Somente `dist/` compõe o site; nenhum banco, sessão, pacote operacional ou protocolo privado é enviado. Não é loja ou serviço comercial aberto.
+O formulário do site somente prepara uma página de revisão no GitHub. Não envia conteúdo automaticamente, não grava formulário, não usa API de IA nem coleta analytics. GitHub Pages está configurado, mas a execução inicial falhou antes de executar qualquer etapa: o serviço não atribuiu um runner. Essa falha inicial está preservada. A [biblioteca legível diretamente no GitHub](docs/README.md) e seus anexos oferecem um caminho público independente da hospedagem. Uma nova publicação só deve ser declarada concluída após conferir o endereço externo e os arquivos da revisão implantada. A entrega usa a apresentação e os arquivos próprios já selecionados de `dist/`, com os três leitores gerados a partir dos guias revisados em `docs/`. Nenhum banco, sessão, pacote operacional ou protocolo privado é enviado. Não é loja ou serviço comercial aberto.
 
 Projeto pessoal de João de Luca. Sem recursos de outra empresa. Implementação estática original; não contém protocolo privado, dados de clientes ou credenciais. Imagens e conteúdo de amostra não devem ser apresentados como documentação oficial do Excalidraw.
+
+
+## Uma fonte para o guia e a página de leitura
+
+Os guias em `docs/` são a fonte de texto dos três leitores. O gerador original
+`scripts/build_readers.py` produz uma nova pasta de entrega, sem alterar o
+`dist/` histórico, executar os fornecedores ou acessar dados privados. A pasta
+recebe os leitores, o índice de seções, os arquivos próprios selecionados e um
+manifesto de fontes, referências e saídas. Uma mudança no guia, no estilo, nos
+arquivos referenciados ou na saída invalida a conferência daquela entrega.
+
+Use uma pasta nova fora deste checkout:
+
+```sh
+python3 scripts/build_readers.py --output /tmp/product-help-reviewed
+python3 scripts/build_readers.py --output /tmp/product-help-reviewed --check
+```
+
+O gerador admite somente os três caminhos definidos, não um CMS genérico.
+Recusa links locais ausentes ou fora do recorte, esquemas inseguros e saída já
+existente. A conferência não aprova a verdade do texto ou certifica direitos:
+a revisão editorial e os limites de cada ensaio continuam necessários.
+
+A publicação de Pages é manual e exige o SHA completo da revisão conferida.
+O workflow gera e confere novamente a entrega antes de enviar somente essa
+pasta. Não há publicação automática em cada commit. A implantação inicial
+falhou antes de executar qualquer etapa. O incidente de Actions/Pages teve
+resolução informada pelo GitHub; isso permite uma tentativa delimitada, mas não
+comprova a implantação desta entrega. A leitura nativa dos guias no GitHub
+permanece disponível. Não foram
+criadas outra conta, hospedagem, assinatura, agenda ou promessa comercial.
