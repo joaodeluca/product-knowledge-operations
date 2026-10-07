@@ -10,6 +10,12 @@ O ensaio Excalidraw de 04/10 continua parcial: backup e restauração ficaram pe
 
 [Validar a configuração correta do Renovate](docs/renovate/VALIDATION.md) responde a uma dúvida pública específica com exemplos próprios executados no validador oficial. Não inclui implantação, autenticação ou manutenção do bot.
 
+## Executar o Knowledge Workspace
+
+A [prévia independente do aplicativo](workspace/README.md) permite criar um projeto vazio, registrar fontes próprias, escrever e revisar artigos e exportar uma central HTML. Mudanças nas fontes vencem as revisões dependentes. A exportação do leitor exclui fontes, evidências e notas internas; o operador deve conferir o texto público antes de compartilhar.
+
+Funciona localmente com Python, sem Codex, chave de IA ou conta. É uma nova forma experimental de entregar a capacidade editorial deste projeto, ainda sem clientes, receita ou benefício econômico demonstrado. Não é serviço hospedado, execução autônoma do produto ou substituto comprovado de uma operação completa. A biblioteca e seus resultados históricos permanecem intactos. [Instruções, requisitos e limites](workspace/README.md).
+
 ## Descrever um escopo público
 
 [Abrir avaliação de procedimento](https://github.com/joaodeluca/product-knowledge-operations/issues/new?template=public-product-scope.yml). Somente URL pública, procedimento e lacuna. O conteúdo e a autoria GitHub serão públicos. Não envie contatos pessoais, dados de clientes, arquivos privados, segredos ou acesso. Não é contratação ou promessa de entrega. O formulário exige sessão GitHub; nenhuma conta é criada por este projeto.
