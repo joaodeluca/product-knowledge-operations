@@ -83,7 +83,15 @@ class WorkspaceTests(unittest.TestCase):
         code,_,_=self.req('PATCH','/api/articles/'+self.aid,dict(self.article,markdown='<script>alert(1)</script>',project_id=self.p['id'],expected_revision=self.p['revision']));self.assertEqual(code,400)
         self.change('/api/articles/'+self.aid,dict(self.article,title='<script>unsafe title</script>'),'PATCH');self.review();rid=self.publish()
         with zipfile.ZipFile(io.BytesIO(self.download(rid))) as z:
-            self.assertNotIn(b'<script>',z.read('index.html'));self.assertIn(b'&lt;script&gt;',z.read('index.html'))
+            self.assertNotIn(b'<script>unsafe title',z.read('index.html'));self.assertEqual(z.read('index.html').count(b'<script>'),1);self.assertIn(b'&lt;script&gt;',z.read('index.html'))
+    def test_intake_preview_apply_http_and_origin_guard(self):
+        data={'project_id':self.p['id'],'expected_revision':self.p['revision'],'original_owned':True,'limits':'Próprio','files':[{'name':'inicio.md','content':'# Início\nTexto próprio.'}]}
+        self.assertEqual(self.req('POST','/api/import/preview',data,{'Origin':'https://other.example'})[0],403)
+        preview=self.ok('POST','/api/import/preview',data)
+        self.assertEqual(self.server.desk.project(self.p['id'])['articles'],[])
+        result=self.ok('POST','/api/import/apply',dict(data,plan=preview['plan'],confirmed=True))
+        self.assertEqual(len(result['articles']),1);self.assertEqual(result['articles'][0]['review']['status'],'missing')
+        self.assertEqual(self.req('POST','/api/import/apply',dict(data,plan=preview['plan'],confirmed=True))[0],409)
     def test_foreign_store_and_second_process_refused(self):
         foreign=self.root/'foreign';foreign.mkdir();(foreign/'notes.txt').write_text('existing')
         with self.assertRaises(ValueError): serve.Server(foreign)

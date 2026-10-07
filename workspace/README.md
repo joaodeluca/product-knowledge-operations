@@ -1,4 +1,4 @@
-# Knowledge Workspace · prévia 0.1.0
+# Knowledge Workspace · prévia 0.2.0
 
 Uma central de ajuda que acompanha as fontes do produto. Registre conhecimento próprio, escreva artigos vinculados, confira o que mudou e exporte uma central de leitura. Quando uma fonte ou um procedimento muda, a revisão dos artigos dependentes vence; a publicação anterior permanece disponível.
 
@@ -27,6 +27,14 @@ A pasta de dados deve estar vazia na primeira execução e fora de um checkout G
 5. **Conferir e revisar:** leia a prévia salva, fontes e procedimento. Informe um identificador local do revisor e a nota. A revisão fica vinculada àquela versão; selecionar “assistida por IA” não equivale a revisão independente.
 6. **Publicações:** confirme os campos públicos e gere a central. Abra a prévia e baixe o ZIP. O ZIP contém HTML independente e manifesto de integridade. Pode ser extraído e lido ou colocado em um destino de hospedagem que você tenha autorizado; este aplicativo não faz upload.
 7. **Manutenção:** atualize a fonte quando houver mudança real. Os artigos vinculados ficam com revisão vencida. Edite o artigo, confira a nova versão e gere outra publicação. A seleção de uma versão anterior não apaga nem restaura rascunhos.
+
+## Importar documentação e buscar na central
+
+Em **Artigos → Importar Markdown**, selecione de 1 a 32 arquivos próprios, total até 128 KiB UTF-8. A prévia mostra originais, rascunhos, endereços e adaptação de links entre arquivos do mesmo lote. Só a confirmação cria os registros, em uma transação; nenhum existente é sobrescrito. Todos entram sem revisão. Nomes que geram o mesmo endereço, HTML, front matter, imagens e links locais não resolvidos impedem a entrada. Não há importação de ZIP, diretórios, anexos ou sites.
+
+Os três documentos próprios em `guide/` acompanham o produto e podem ser importados juntos para conhecer o fluxo. São ajuda deste aplicativo, sem dados de clientes. O corpo original UTF-8 fica na fonte e no histórico; a importação adapta links do rascunho e extrai o título inicial para evitar duplicação no leitor. A importação não valida execução ou veracidade.
+
+A nova central exportada inclui busca por título e corpo público, com todas as palavras e comparação sem acentos. A busca funciona no navegador sem rede. A lista continua utilizável com JavaScript desativado. Publicações antigas preservadas não recebem busca retroativamente.
 
 ## O que sai no ZIP
 
@@ -59,7 +67,7 @@ No repositório de origem:
 
 ```sh
 python3 -m unittest discover -s workspace/tests -v
-python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.1.0.zip
+python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.2.0.zip
 ```
 
 O construtor inclui uma lista fixa de arquivos do produto; não empacota a pasta de dados, o checkout inteiro ou amostras.

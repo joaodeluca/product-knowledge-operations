@@ -10,10 +10,11 @@ import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 import engine
+import intake
 from reader import page
 
 ROOT=Path(__file__).resolve().parent
-VERSION='0.1.0'
+VERSION='0.2.0'
 
 class Server(ThreadingHTTPServer):
     daemon_threads=True
@@ -95,7 +96,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200,raw,'application/zip',{'Content-Disposition':'attachment; filename="help-center.zip"'})
             if len(parts)>=4 and parts[0]=='reader':
                 name='/'.join(parts[3:]); raw=d.release_file(parts[1],parts[2],name)
-                return self.send(200,raw,'text/html; charset=utf-8' if name.endswith('.html') else 'application/json',{'Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'"})
+                return self.send(200,raw,'text/html; charset=utf-8' if name.endswith('.html') else 'application/json',{'Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'"})
             names={'/':'index.html','/app.js':'app.js','/style.css':'style.css'}
             if path.path in names:
                 name=names[path.path]; mime={'html':'text/html','js':'text/javascript','css':'text/css'}[name.split('.')[-1]]
@@ -118,6 +119,8 @@ class Handler(BaseHTTPRequestHandler):
             parts=urlsplit(self.path).path.strip('/').split('/'); d=self.server.desk
             if parts==['api','projects'] and self.command=='POST': return self.send(201,d.create_project(data))
             pid=data.get('project_id'); rev=data.get('expected_revision')
+            if parts==['api','import','preview'] and self.command=='POST': return self.send(200,intake.preview(d,pid,data,rev))
+            if parts==['api','import','apply'] and self.command=='POST': return self.send(201,intake.apply(d,pid,data,rev))
             fns={'sources':(d.create_source,d.update_source),'procedures':(d.create_procedure,d.update_procedure),'articles':(d.create_article,d.update_article)}
             if len(parts)==2 and parts[0]=='api' and parts[1] in fns and self.command=='POST': return self.send(201,fns[parts[1]][0](pid,data,rev))
             if len(parts)==3 and parts[0]=='api' and parts[1] in fns and self.command=='PATCH': return self.send(200,fns[parts[1]][1](pid,parts[2],data,rev))
