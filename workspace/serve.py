@@ -15,7 +15,7 @@ import backup
 from reader import page
 
 ROOT=Path(__file__).resolve().parent
-VERSION='0.4.0'
+VERSION='0.5.0'
 
 class Server(ThreadingHTTPServer):
     daemon_threads=True

@@ -1,4 +1,4 @@
-# Knowledge Workspace · prévia 0.4.0
+# Knowledge Workspace · prévia 0.5.0
 
 Uma central de ajuda que acompanha as fontes do produto. Registre conhecimento próprio, escreva artigos vinculados, confira o que mudou e exporte uma central de leitura. Quando uma fonte ou um procedimento muda, a revisão dos artigos dependentes vence; a publicação anterior permanece disponível.
 
@@ -17,6 +17,14 @@ python3 serve.py --store "$HOME/KnowledgeWorkspace/meu-projeto" --open
 O comando abre a interface no navegador padrão. Sem `--open`, a sessão fica no arquivo privado `session.json` dentro da pasta de dados escolhida: abra a URL desse arquivo. O servidor usa uma porta livre de `127.0.0.1`, aceita somente conexões locais e encerra com Ctrl+C. Para reabrir, execute o mesmo comando com a mesma pasta. A sessão muda; os projetos permanecem.
 
 A pasta de dados deve estar vazia na primeira execução e fora de um checkout Git. O aplicativo recusa adotar pastas com outros dados e recusa dois processos simultâneos no mesmo workspace. Não substitua o diretório de uma versão anterior de outro aplicativo. Não publique a pasta de dados nem `session.json`.
+
+## Um caminho guiado na visão geral
+
+Depois de criar um projeto, a Visão geral mostra os quatro passos com os dados salvos: importar documentos, conferir os artigos, gerar a central e baixar o ZIP público. Os botões de publicação ficam indisponíveis enquanto houver revisão pendente.
+
+**Revisar próximo artigo** abre uma fila de conferência. Cada artigo mostra sua própria prévia, fontes, evidência e limites. Informe a nota e confirme individualmente com **Registrar e continuar**. Cancelar interrompe a fila; as revisões já salvas permanecem. Não há aprovação em lote ou aprovação automática. Uma mudança concorrente continua sendo recusada pelo controle de versão.
+
+A visão geral sinaliza alterações posteriores à publicação selecionada. O download continua apontando para essa versão preservada; gere outra central para incorporar as mudanças. Para criar conteúdo manualmente, use Fontes, Procedimentos e Artigos na barra lateral.
 
 ## Do projeto à central
 
@@ -61,7 +69,7 @@ O sistema não reconhece segredos colocados no campo de texto público. Confira 
 
 Use **Backup privado** na barra lateral para baixar todos os projetos, fontes originais e versões, procedimentos, artigos, revisões declaradas, histórico e publicações preservadas. A confirmação destaca que este ZIP é privado. Ele contém dados salvos, sem criptografia; guarde uma cópia fora da pasta de trabalho em local sob seu controle. Sessões, tokens, banco SQLite, arquivos não registrados e código do aplicativo não são incluídos. O download não altera as revisões.
 
-Para recuperar, use a distribuição 0.4.0 extraída e um destino **que ainda não existe**, fora de Git. A pasta pai precisa existir:
+Para recuperar, use a distribuição 0.5.0 extraída e um destino **que ainda não existe**, fora de Git. A pasta pai precisa existir:
 
 ```sh
 python3 backup.py restore /caminho/workspace-private-backup.zip --to "$HOME/KnowledgeWorkspace/recuperado"
@@ -90,7 +98,7 @@ No repositório de origem:
 
 ```sh
 python3 -m unittest discover -s workspace/tests -v
-python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.4.0.zip
+python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.5.0.zip
 ```
 
 O construtor inclui uma lista fixa de arquivos do produto; não empacota a pasta de dados, o checkout inteiro ou amostras.

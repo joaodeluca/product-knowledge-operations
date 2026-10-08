@@ -12,9 +12,11 @@ O ensaio Excalidraw de 04/10 continua parcial: backup e restauração ficaram pe
 
 ## Executar o Knowledge Workspace
 
+[Conhecer o aplicativo e começar](https://joaodeluca.github.io/product-knowledge-operations/workspace.html). A biblioteca e a página inicial dão acesso ao produto; a visão geral guia importação, revisão individual, geração e download da central.
+
 A [prévia independente do aplicativo](workspace/README.md) permite criar um projeto vazio, importar documentos Markdown próprios em lote com prévia e sem sobrescrita, registrar fontes, revisar artigos e exportar uma central HTML com busca local. Os originais são preservados; a importação não aprova os artigos.
 
-**[Baixar Knowledge Workspace 0.4.0](https://github.com/joaodeluca/product-knowledge-operations/releases/tag/workspace-v0.4.0)** — inclui importação e atualização por arquivo, comparação antes/depois e histórico. O backup privado recupera fontes, rascunhos, revisões e publicações em uma pasta nova. Mudanças nas fontes vencem as revisões dependentes. A exportação do leitor exclui fontes, evidências e notas internas; o operador deve conferir o texto público antes de compartilhar.
+**[Baixar Knowledge Workspace 0.5.0](https://github.com/joaodeluca/product-knowledge-operations/releases/tag/workspace-v0.5.0)** — inclui importação e atualização por arquivo, comparação antes/depois e histórico. O backup privado recupera fontes, rascunhos, revisões e publicações em uma pasta nova. Mudanças nas fontes vencem as revisões dependentes. A exportação do leitor exclui fontes, evidências e notas internas; o operador deve conferir o texto público antes de compartilhar.
 
 Funciona localmente com Python, sem Codex, chave de IA ou conta. É uma nova forma experimental de entregar a capacidade editorial deste projeto, ainda sem clientes, receita ou benefício econômico demonstrado. Não é serviço hospedado, execução autônoma do produto ou substituto comprovado de uma operação completa. A biblioteca e seus resultados históricos permanecem intactos. [Instruções, requisitos e limites](workspace/README.md).
 
@@ -56,7 +58,7 @@ python3 scripts/build_readers.py --output /tmp/product-help-reviewed
 python3 scripts/build_readers.py --output /tmp/product-help-reviewed --check
 ```
 
-O gerador admite somente os três caminhos definidos, não um CMS genérico.
+O gerador mantém somente os três guias canônicos. Uma lista fixa adicional inclui a página original do aplicativo e sua chamada na biblioteca e na apresentação, preservando o dist histórico. Não é um CMS genérico.
 Recusa links locais ausentes ou fora do recorte, esquemas inseguros e saída já
 existente. A conferência não aprova a verdade do texto ou certifica direitos:
 a revisão editorial e os limites de cada ensaio continuam necessários.

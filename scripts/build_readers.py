@@ -276,6 +276,19 @@ def compile_tree(root):
         references.update(renderer.references); reference_sets.update(renderer.reference_sets)
         sources.append({'path': source, 'bytes': len(raw), 'sha256': digest(raw), 'output': target})
     require('index.html' in output and 'library.html' in output, 'Existing entry/library required')
+    # Fixed original product pages; historical dist and canonical guides stay untouched.
+    site = {'site/workspace.html': 'workspace.html', 'site/workspace-site.css': 'workspace-site.css',
+            'site/workspace-entry.html': None}
+    for source, target in site.items():
+        raw = read_file(root / source); privacy(raw.decode('utf-8')); inputs[source] = raw
+        if target: output[target] = raw
+    entry = inputs['site/workspace-entry.html'].decode('utf-8')
+    for target in ('index.html', 'library.html'):
+        page = output[target].decode('utf-8')
+        require(page.count('</head>') == 1 and page.count('</header>') == 1, 'Entry anchors ambiguous')
+        page = page.replace('</head>', '<link rel="stylesheet" href="workspace-site.css"></head>')
+        page = page.replace('</header>', '</header>' + entry, 1)
+        output[target] = page.encode('utf-8')
     output[CSS] = css
     # Ignore inherited generated manifest; this pipeline owns its deterministic replacement.
     output.pop(MANIFEST, None)

@@ -25,7 +25,7 @@ class ReaderPipelineTest(unittest.TestCase):
         (self.repo/'scripts').mkdir(); (self.repo/'scripts/build_readers.py').write_bytes(MODULE.read_bytes())
         (self.repo/'assets').mkdir(); (self.repo/'assets/reader.css').write_text('body{color:#123}img{max-width:100%}')
         (self.repo/'dist').mkdir()
-        for name in ('index.html','library.html'): (self.repo/'dist'/name).write_text('<!doctype html><html><body>Own existing library</body></html>')
+        for name in ('index.html','library.html'): (self.repo/'dist'/name).write_text('<!doctype html><html><head></head><body><header>Own header</header>Own existing library</body></html>')
         for name in ('excalidraw.html','openrefine.html','renovate.html'): (self.repo/'dist'/name).write_text('<html>Obsolete own reader</html>')
         ex=self.repo/'dist/excalidraw/files'; ex.mkdir(parents=True)
         for name in builder.EXCAL_FILES:
@@ -41,10 +41,23 @@ class ReaderPipelineTest(unittest.TestCase):
         self.ren.write_text('# Validate own configuration\n\nRE2 not loaded; no regex certification.\n\n## Own samples\n\n[Examples](examples/) [Observed controls](OBSERVATIONS.json).\n')
         examples=self.ren.parent/'examples'; examples.mkdir(); (examples/'own.json').write_text('{"automerge":false}')
         (self.ren.parent/'OBSERVATIONS.json').write_text('{"synthetic":true}')
+        (self.repo/'site').mkdir()
+        for name in ('workspace.html','workspace-site.css','workspace-entry.html'):
+            (self.repo/'site'/name).write_bytes((MODULE.parent.parent/'site'/name).read_bytes())
         self.out=self.root/'frozen-output'
 
     def tearDown(self): self.tmp.cleanup()
     def build(self): return builder.build(self.repo,self.out)
+
+    def test_product_entry_and_page_are_bound_to_manifest_without_dist_mutation(self):
+        original=(self.repo/'dist/library.html').read_bytes();self.build()
+        self.assertIn(b'workspace.html',(self.out/'library.html').read_bytes())
+        self.assertEqual((self.out/'workspace.html').read_bytes(),(self.repo/'site/workspace.html').read_bytes())
+        self.assertEqual((self.repo/'dist/library.html').read_bytes(),original)
+        for path in (self.repo/'site/workspace.html',self.repo/'site/workspace-entry.html'):
+            raw=path.read_bytes();path.write_bytes(raw+b'changed')
+            with self.assertRaises(ValueError):builder.check(self.repo,self.out)
+            path.write_bytes(raw)
 
     def test_three_readers_preserve_words_source_limits_and_escape_code(self):
         original={p.relative_to(self.repo/'dist').as_posix():p.read_bytes() for p in (self.repo/'dist').rglob('*') if p.is_file()}
