@@ -5,14 +5,14 @@ import json
 from pathlib import Path
 import zipfile
 ROOT=Path(__file__).resolve().parent
-FILES=('serve.py','engine.py','reader.py','intake.py','web/index.html','web/app.js','web/style.css','README.md','guide/primeiros-passos.md','guide/importar-documentos.md','guide/manter-central.md')
+FILES=('serve.py','engine.py','reader.py','intake.py','backup.py','web/index.html','web/app.js','web/style.css','README.md','guide/primeiros-passos.md','guide/importar-documentos.md','guide/manter-central.md')
 def build(output):
     output=Path(output).absolute()
     if output.is_relative_to(ROOT.parent): raise ValueError('Escolha saída fora do checkout.')
     values={name:(ROOT/name).read_bytes() for name in FILES}
     for name,body in values.items():
         if any(x in body for x in (b'/Users/',b'BEGIN PRIVATE KEY',b'github_pat_',b'ghp_')): raise ValueError('Referência privada no produto: '+name)
-    manifest={'product':'Knowledge Workspace','version':'0.3.0','files':[{'path':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()} for n,b in sorted(values.items())]}
+    manifest={'product':'Knowledge Workspace','version':'0.4.0','files':[{'path':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()} for n,b in sorted(values.items())]}
     values['distribution.json']=(json.dumps(manifest,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
     output.parent.mkdir(parents=True,exist_ok=True)
     with output.open('xb') as stream:

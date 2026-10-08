@@ -1,4 +1,4 @@
-# Knowledge Workspace · prévia 0.3.0
+# Knowledge Workspace · prévia 0.4.0
 
 Uma central de ajuda que acompanha as fontes do produto. Registre conhecimento próprio, escreva artigos vinculados, confira o que mudou e exporte uma central de leitura. Quando uma fonte ou um procedimento muda, a revisão dos artigos dependentes vence; a publicação anterior permanece disponível.
 
@@ -57,6 +57,21 @@ Este fluxo substitui o texto atual do artigo, inclusive edições manuais, apena
 
 O sistema não reconhece segredos colocados no campo de texto público. Confira o leitor antes de compartilhar. O ZIP da central **não é backup** dos dados de trabalho.
 
+## Backup privado e recuperação
+
+Use **Backup privado** na barra lateral para baixar todos os projetos, fontes originais e versões, procedimentos, artigos, revisões declaradas, histórico e publicações preservadas. A confirmação destaca que este ZIP é privado. Ele contém dados salvos, sem criptografia; guarde uma cópia fora da pasta de trabalho em local sob seu controle. Sessões, tokens, banco SQLite, arquivos não registrados e código do aplicativo não são incluídos. O download não altera as revisões.
+
+Para recuperar, use a distribuição 0.4.0 extraída e um destino **que ainda não existe**, fora de Git. A pasta pai precisa existir:
+
+```sh
+python3 backup.py restore /caminho/workspace-private-backup.zip --to "$HOME/KnowledgeWorkspace/recuperado"
+python3 serve.py --store "$HOME/KnowledgeWorkspace/recuperado" --open
+```
+
+A restauração confere nomes, tamanhos, hashes, tabelas e vínculos em uma pasta temporária. Recusa sobrescrever uma pasta existente. Recria os dados usando o código do aplicativo; não executa SQL ou código do backup. Fontes, revisões atuais ou vencidas e publicações antigas são preservadas; nenhuma nova aprovação é criada. Uma nova sessão é gerada ao iniciar o servidor. O workspace original pode continuar existindo separadamente; não há mesclagem entre cópias.
+
+Restaure somente backups próprios confiáveis: hashes detectam corrupção, não autenticam autoria. Máximo de 32 MiB para o ZIP e para o conteúdo descomprimido, até 4096 entradas. Uma interrupção de sistema durante a instalação pode deixar uma pasta incompleta, que o aplicativo recusará adotar. Nesse caso mantenha o ZIP e use outro destino novo. Não há promessa de recuperação contra toda falha de disco ou energia, armazenamento remoto ou rotina automática de backup.
+
 ## Formato e limites
 
 Markdown simples: títulos, listas, blocos de código, tabelas e links HTTPS. HTML não é aceito. Imagens remotas e links locais que não correspondam a artigos da publicação não são ativados. Nesta prévia a interface é textual; anexos e editores visuais não estão disponíveis.
@@ -75,7 +90,7 @@ No repositório de origem:
 
 ```sh
 python3 -m unittest discover -s workspace/tests -v
-python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.3.0.zip
+python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.4.0.zip
 ```
 
 O construtor inclui uma lista fixa de arquivos do produto; não empacota a pasta de dados, o checkout inteiro ou amostras.

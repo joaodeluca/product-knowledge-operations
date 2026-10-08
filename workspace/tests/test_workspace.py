@@ -46,6 +46,18 @@ class WorkspaceTests(unittest.TestCase):
         self.change('/api/publish',{'actor':ACTOR,'note':'RELEASE_NOTE_SECRET','public_fields_reviewed':True});return self.p['active_release_id']
     def download(self,rid):
         code,_,body=self.req('GET',f'/api/releases/{self.p["id"]}/{rid}/download');self.assertEqual(code,200,body);return body
+    def test_backup_requires_auth_origin_confirmation_and_leaves_state_unchanged(self):
+        self.content(); self.review(); self.publish(); before=self.p
+        data={'private_data_confirmed':True}
+        self.assertEqual(self.req('POST','/api/backup',data,{'Cookie':''})[0],401)
+        self.assertEqual(self.req('POST','/api/backup',data,{'Origin':'https://other.example'})[0],403)
+        self.assertEqual(self.req('POST','/api/backup',{})[0],400)
+        self.assertEqual(self.req('GET','/api/backup')[0],404)
+        code,headers,raw=self.req('POST','/api/backup',data); self.assertEqual(code,200)
+        self.assertEqual(headers['Content-Type'],'application/zip');self.assertIn('private',headers['Content-Disposition'])
+        with zipfile.ZipFile(io.BytesIO(raw)) as z:self.assertIn(b'SOURCE_TITLE_SECRET',z.read('records.json'))
+        self.assertEqual(self.server.desk.project(self.p['id']),before)
+
     def test_update_file_http_preview_confirm_and_origin(self):
         data={'project_id':self.p['id'],'expected_revision':self.p['revision'],'original_owned':True,'limits':'Próprio','files':[{'name':'inicio.md','content':'# Início\nOriginal.'}]}
         v=self.ok('POST','/api/import/preview',data);self.p=self.ok('POST','/api/import/apply',dict(data,plan=v['plan'],confirmed=True))

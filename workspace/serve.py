@@ -11,10 +11,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 import engine
 import intake
+import backup
 from reader import page
 
 ROOT=Path(__file__).resolve().parent
-VERSION='0.3.0'
+VERSION='0.4.0'
 
 class Server(ThreadingHTTPServer):
     daemon_threads=True
@@ -117,6 +118,9 @@ class Handler(BaseHTTPRequestHandler):
             data=json.loads(self.rfile.read(n))
             if not isinstance(data,dict): return self.error(400,'Objeto obrigatório')
             parts=urlsplit(self.path).path.strip('/').split('/'); d=self.server.desk
+            if parts==['api','backup'] and self.command=='POST':
+                if data.get('private_data_confirmed') is not True: return self.error(400,'Confirme que o backup contém todos os dados privados do workspace.')
+                return self.send(200,backup.export(d),'application/zip',{'Content-Disposition':'attachment; filename="workspace-private-backup.zip"'})
             if parts==['api','projects'] and self.command=='POST': return self.send(201,d.create_project(data))
             pid=data.get('project_id'); rev=data.get('expected_revision')
             if parts==['api','import','preview'] and self.command=='POST': return self.send(200,intake.preview(d,pid,data,rev))
