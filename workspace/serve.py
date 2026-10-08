@@ -14,7 +14,7 @@ import intake
 from reader import page
 
 ROOT=Path(__file__).resolve().parent
-VERSION='0.2.0'
+VERSION='0.3.0'
 
 class Server(ThreadingHTTPServer):
     daemon_threads=True
@@ -121,6 +121,8 @@ class Handler(BaseHTTPRequestHandler):
             pid=data.get('project_id'); rev=data.get('expected_revision')
             if parts==['api','import','preview'] and self.command=='POST': return self.send(200,intake.preview(d,pid,data,rev))
             if parts==['api','import','apply'] and self.command=='POST': return self.send(201,intake.apply(d,pid,data,rev))
+            if parts==['api','import','update-preview'] and self.command=='POST': return self.send(200,intake.update_preview(d,pid,data,rev))
+            if parts==['api','import','update-apply'] and self.command=='POST': return self.send(200,intake.update_apply(d,pid,data,rev))
             fns={'sources':(d.create_source,d.update_source),'procedures':(d.create_procedure,d.update_procedure),'articles':(d.create_article,d.update_article)}
             if len(parts)==2 and parts[0]=='api' and parts[1] in fns and self.command=='POST': return self.send(201,fns[parts[1]][0](pid,data,rev))
             if len(parts)==3 and parts[0]=='api' and parts[1] in fns and self.command=='PATCH': return self.send(200,fns[parts[1]][1](pid,parts[2],data,rev))

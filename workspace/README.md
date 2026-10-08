@@ -1,4 +1,4 @@
-# Knowledge Workspace · prévia 0.2.0
+# Knowledge Workspace · prévia 0.3.0
 
 Uma central de ajuda que acompanha as fontes do produto. Registre conhecimento próprio, escreva artigos vinculados, confira o que mudou e exporte uma central de leitura. Quando uma fonte ou um procedimento muda, a revisão dos artigos dependentes vence; a publicação anterior permanece disponível.
 
@@ -36,6 +36,14 @@ Os três documentos próprios em `guide/` acompanham o produto e podem ser impor
 
 A nova central exportada inclui busca por título e corpo público, com todas as palavras e comparação sem acentos. A busca funciona no navegador sem rede. A lista continua utilizável com JavaScript desativado. Publicações antigas preservadas não recebem busca retroativamente.
 
+## Atualizar um documento importado
+
+Em **Artigos → Atualizar por arquivo**, escolha a nova versão com o mesmo nome original. A prévia compara a fonte interna e o rascunho público, mostra o título, as diferenças e os artigos que dependem da fonte. A confirmação salva fonte e artigo juntos; se houver conflito, nada é salvo. Endereço, limites públicos e vínculos são mantidos. Links para outros documentos já importados são adaptados ao endereço atual do artigo correspondente.
+
+Uma alteração vence a revisão anterior e exige nova conferência antes de publicar. A fonte original continua em **Fontes → Histórico**; o texto anterior do artigo fica em **Versões anteriores** após cada atualização por arquivo. Publicações anteriores permanecem intactas. Um arquivo sem mudança não cria revisão, histórico ou cópia adicional.
+
+Este fluxo substitui o texto atual do artigo, inclusive edições manuais, apenas após a prévia e confirmação. Não faz mesclagem automática. Se você mudou os vínculos, anexou arquivos à fonte ou renomeou o endereço do próprio artigo, use a edição manual. Para documentos diferentes, continue usando Importar Markdown.
+
 ## O que sai no ZIP
 
 | Informação | Central exportada |
@@ -67,7 +75,7 @@ No repositório de origem:
 
 ```sh
 python3 -m unittest discover -s workspace/tests -v
-python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.2.0.zip
+python3 workspace/build_distribution.py --output /caminho/fora/do/checkout/knowledge-workspace-0.3.0.zip
 ```
 
 O construtor inclui uma lista fixa de arquivos do produto; não empacota a pasta de dados, o checkout inteiro ou amostras.

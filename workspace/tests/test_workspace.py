@@ -46,6 +46,16 @@ class WorkspaceTests(unittest.TestCase):
         self.change('/api/publish',{'actor':ACTOR,'note':'RELEASE_NOTE_SECRET','public_fields_reviewed':True});return self.p['active_release_id']
     def download(self,rid):
         code,_,body=self.req('GET',f'/api/releases/{self.p["id"]}/{rid}/download');self.assertEqual(code,200,body);return body
+    def test_update_file_http_preview_confirm_and_origin(self):
+        data={'project_id':self.p['id'],'expected_revision':self.p['revision'],'original_owned':True,'limits':'Próprio','files':[{'name':'inicio.md','content':'# Início\nOriginal.'}]}
+        v=self.ok('POST','/api/import/preview',data);self.p=self.ok('POST','/api/import/apply',dict(data,plan=v['plan'],confirmed=True))
+        data.update(expected_revision=self.p['revision'],article_id=self.p['articles'][0]['id'],files=[{'name':'inicio.md','content':'# Início\nAtualizado.'}])
+        self.assertEqual(self.req('POST','/api/import/update-preview',data,{'Origin':'https://other.example'})[0],403)
+        v=self.ok('POST','/api/import/update-preview',data);self.assertTrue(v['can_apply'])
+        self.assertEqual(self.req('POST','/api/import/update-apply',dict(data,plan=v['plan']))[0],409)
+        self.p=self.ok('POST','/api/import/update-apply',dict(data,plan=v['plan'],confirmed=True));self.assertEqual(self.p['sources'][0]['content'],'# Início\nAtualizado.')
+        self.assertEqual(self.req('POST','/api/import/update-apply',dict(data,plan=v['plan'],confirmed=True))[0],409)
+
     def test_public_reader_excludes_all_internal_fields_and_hashes_match(self):
         self.content();self.review();rid=self.publish();raw=self.download(rid)
         with zipfile.ZipFile(io.BytesIO(raw)) as z:

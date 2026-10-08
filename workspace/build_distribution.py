@@ -12,7 +12,7 @@ def build(output):
     values={name:(ROOT/name).read_bytes() for name in FILES}
     for name,body in values.items():
         if any(x in body for x in (b'/Users/',b'BEGIN PRIVATE KEY',b'github_pat_',b'ghp_')): raise ValueError('Referência privada no produto: '+name)
-    manifest={'product':'Knowledge Workspace','version':'0.2.0','files':[{'path':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()} for n,b in sorted(values.items())]}
+    manifest={'product':'Knowledge Workspace','version':'0.3.0','files':[{'path':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()} for n,b in sorted(values.items())]}
     values['distribution.json']=(json.dumps(manifest,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
     output.parent.mkdir(parents=True,exist_ok=True)
     with output.open('xb') as stream:

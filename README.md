@@ -14,7 +14,7 @@ O ensaio Excalidraw de 04/10 continua parcial: backup e restauração ficaram pe
 
 A [prévia independente do aplicativo](workspace/README.md) permite criar um projeto vazio, importar documentos Markdown próprios em lote com prévia e sem sobrescrita, registrar fontes, revisar artigos e exportar uma central HTML com busca local. Os originais são preservados; a importação não aprova os artigos.
 
-**[Baixar Knowledge Workspace 0.2.0](https://github.com/joaodeluca/product-knowledge-operations/releases/tag/workspace-v0.2.0)** — inclui três guias próprios de uso, que podem ser importados juntos. Mudanças nas fontes vencem as revisões dependentes. A exportação do leitor exclui fontes, evidências e notas internas; o operador deve conferir o texto público antes de compartilhar.
+**[Baixar Knowledge Workspace 0.3.0](https://github.com/joaodeluca/product-knowledge-operations/releases/tag/workspace-v0.3.0)** — inclui três guias próprios, importação e atualização por arquivo com comparação antes/depois, histórico e nova revisão obrigatória. Mudanças nas fontes vencem as revisões dependentes. A exportação do leitor exclui fontes, evidências e notas internas; o operador deve conferir o texto público antes de compartilhar.
 
 Funciona localmente com Python, sem Codex, chave de IA ou conta. É uma nova forma experimental de entregar a capacidade editorial deste projeto, ainda sem clientes, receita ou benefício econômico demonstrado. Não é serviço hospedado, execução autônoma do produto ou substituto comprovado de uma operação completa. A biblioteca e seus resultados históricos permanecem intactos. [Instruções, requisitos e limites](workspace/README.md).
 
