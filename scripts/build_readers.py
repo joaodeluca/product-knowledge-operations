@@ -280,7 +280,7 @@ def compile_tree(root):
     site = {'site/workspace.html': 'workspace.html', 'site/workspace-site.css': 'workspace-site.css',
             'site/workspace-entry.html': None,
             **{'site/browser/' + name: 'browser/' + name for name in
-               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs')}}
+               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs', 'autosave.mjs')}}
     for source, target in site.items():
         raw = read_file(root / source); privacy(raw.decode('utf-8')); inputs[source] = raw
         if target: output[target] = raw

@@ -1,12 +1,12 @@
 # Salvamento privado entre dispositivos
 
-A edição web 0.7 acrescenta uma conta pessoal com projetos privados no Supabase. O titular autorizou e criou o recurso Free, definiu suas credenciais e autorizou seu usuário. `site/browser/cloud-config.mjs` contém somente o endereço do projeto e a chave pública publishable. Esses arquivos não criam contas ou contratam planos.
+A edição web 0.8 acrescenta uma conta pessoal com projetos privados no Supabase. O titular autorizou e criou o recurso Free, definiu suas credenciais e autorizou seu usuário. `site/browser/cloud-config.mjs` contém somente o endereço do projeto e a chave pública publishable. Esses arquivos não criam contas ou contratam planos.
 
 ## Resultado proposto
 
 Entre com a mesma conta do Workspace em outro dispositivo para abrir os projetos salvos. O servidor confirma cada gravação; uma versão desatualizada recebe conflito, sem sobrescrever outra edição. Falha de rede mantém o editor e informa que a gravação pode ter chegado ao servidor. Não há sincronização offline automática nem edição colaborativa simultânea.
 
-Originais, histórico, revisões e publicações ficam no projeto privado. A cópia dos projetos locais exige confirmação e conserva os originais neste navegador. O backup JSON continua disponível. A sessão de acesso fica somente na memória da aba: recarregar ou fechar exige entrar novamente, mas não apaga os projetos do servidor. Não há armazenamento de senhas no aplicativo.
+Originais, histórico, revisões e publicações ficam no projeto privado. A cópia dos projetos locais exige confirmação e conserva os originais neste navegador. O backup JSON continua disponível. A sessão (tokens de acesso e renovação, identificador e e-mail) fica no localStorage deste site, por projeto Supabase, por autorização do titular. A senha nunca é persistida. Recarregar restaura a conta; Sair remove o login do navegador. Web Locks serializa a renovação entre abas quando disponível. Falha temporária de rede conserva a sessão para reconexão, enquanto credencial revogada é removida. Troca de conta não autoriza gravar o rascunho de outra identidade.
 
 ## Configuração de uma instalação pessoal
 
@@ -41,10 +41,12 @@ O backend não envia convites, mensagens comerciais ou e-mails de recuperação.
 
 ## Verificações locais
 
-`node --test scripts/tests/browser-cloud.test.mjs scripts/tests/browser-model.test.mjs` verifica o cliente com respostas HTTP simuladas e as regras editoriais. Não comprova autenticação hospedada.
+`node --test scripts/tests/browser-cloud.test.mjs scripts/tests/browser-autosave.test.mjs scripts/tests/browser-model.test.mjs` verifica o cliente com respostas HTTP simuladas e as regras editoriais. Não comprova autenticação hospedada.
 
 `test-database.py` aplica a migração a um PostgreSQL descartável vazio e verifica permissões, isolamento entre duas identidades, concorrência, rollback e limites. Exige `KW_TEST_CONTAINER` e usa o ambiente Docker explicitamente fornecido. O teste cria um substituto de `auth.uid()` com claims simulados; não representa o gateway JWT do Supabase. Nunca executar em um banco de produção.
 
 Referências consultadas em 13/10/2026: [Auth com senha](https://supabase.com/docs/guides/auth/passwords), [chaves de API](https://supabase.com/docs/guides/getting-started/api-keys), [segurança por linha](https://supabase.com/docs/guides/database/postgres/row-level-security), [SMTP](https://supabase.com/docs/guides/auth/auth-smtp), [plano Free](https://supabase.com/pricing).
 
 A integração hospedada foi conferida em 13/10/2026 com o login feito pelo titular, duas sessões em origens locais distintas e Supabase real: criação/gravação/leitura compartilhada, conflito recusado, rascunho preservado, cópia local consentida, backup validado e logout de uma sessão sem apagar os projetos. Não representa teste em dois dispositivos físicos, aceitação externa ou auditoria independente.
+
+Na edição0.8, o editor salva após900ms sem digitação e serializa alterações feitas durante gravações. Confirma somente após resposta válida. Uma resposta perdida exige conferência da versão remota antes de qualquer nova tentativa; JSONB pode reordenar chaves, por isso a comparação é estrutural. Conflito mantém texto, oferece download do rascunho e não sobrescreve automaticamente. A saída da tela aguarda gravação ou pede descarte explícito. Originais e histórico continuam privados. [Sessões Supabase](https://supabase.com/docs/guides/auth/sessions).

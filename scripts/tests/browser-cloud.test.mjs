@@ -38,3 +38,27 @@ test('restore creates new ids and retains the input unchanged',async()=>{
 test('unexpected save acknowledgement cannot be presented as a successful save',async()=>{
  const p=newProject('Own');const {api}=client(url=>url.includes('/token?')?json(session):url.endsWith('kw_list_projects')?json([]):json({...p,version:99}));await api.signIn('x','y');await assert.rejects(()=>api.saveProject(p,null),/inesperada/);
 });
+const memory=()=>{const m=new Map();return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)};};
+test('persistent session resumes after reload without password, logout removes it',async()=>{
+ const storage=memory();let passwords=0;const fetcher=async url=>{if(url.includes('grant_type=password')){passwords++;return json(session);}return url.includes('logout')?new Response(null,{status:204}):json([]);};
+ const first=cloudStore(config,{storage,fetcher});await first.signIn('fixture','never-persist-password');assert(!storage.getItem(first.sessionKey).includes('never-persist-password'));
+ const reload=cloudStore(config,{storage,fetcher});assert.deepEqual(await reload.resume(),[]);assert.equal(passwords,1);await reload.signOut();assert.equal(await cloudStore(config,{storage,fetcher}).resume(),null);
+});
+test('parallel tabs serialize refresh and read latest rotated session',async()=>{
+ const storage=memory();let at=0,refreshes=0,queue=Promise.resolve();const locks={request:(key,fn)=>{const p=queue.then(fn);queue=p.catch(()=>{});return p;}};
+ const fetcher=async url=>{if(url.includes('refresh_token')){refreshes++;return json({...session,access_token:'rotated'});}return url.includes('token?')?json(session):json([]);};
+ const a=cloudStore(config,{storage,locks,fetcher,now:()=>at});await a.signIn('x','y');const b=cloudStore(config,{storage,locks,fetcher,now:()=>at});at=3600001;
+ await Promise.all([a.listProjects(),b.resume()]);assert.equal(refreshes,1);
+});
+test('transient refresh failure preserves login for reconnection; revoked refresh clears it',async()=>{
+ const storage=memory();let at=0,mode='online';const fetcher=async url=>{if(url.includes('refresh_token')){if(mode==='offline')throw Error('Network');if(mode==='revoked')return json({},400);}return url.includes('token?')?json(session):json([]);};
+ const a=cloudStore(config,{storage,fetcher,now:()=>at});await a.signIn('x','y');at=3600001;mode='offline';await assert.rejects(a.listProjects());assert(storage.getItem(a.sessionKey));mode='online';await a.listProjects();at=7200002;mode='revoked';await assert.rejects(a.listProjects());assert.equal(storage.getItem(a.sessionKey),null);
+});
+test('late refresh cannot resurrect a session signed out in another tab',async()=>{
+ const storage=memory();let at=0,release;const response=new Promise(r=>release=r);const fetcher=async url=>url.includes('refresh_token')?response:url.includes('token?')?json(session):url.includes('logout')?new Response(null,{status:204}):json([]);
+ const a=cloudStore(config,{storage,fetcher,now:()=>at});await a.signIn('x','y');const b=cloudStore(config,{storage,fetcher,now:()=>at});at=3600001;const refresh=a.listProjects();await b.signOut();release(json(session));await assert.rejects(refresh);assert.equal(storage.getItem(a.sessionKey),null);
+});
+test('a dirty tab cannot write under another account after shared login changes',async()=>{
+ const storage=memory();let who=session,writeCalls=0;const fetcher=async url=>{if(url.includes('token?'))return json(who);if(url.endsWith('kw_save_project'))writeCalls++;return json([]);};
+ const a=cloudStore(config,{storage,fetcher});await a.signIn('a','a');const b=cloudStore(config,{storage,fetcher});who={...session,user:{id:'second-user'}};await b.signIn('b','b');await assert.rejects(()=>a.saveProject(newProject('Draft'),null),/conta mudou/);assert.equal(writeCalls,0);
+});
