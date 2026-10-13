@@ -95,3 +95,11 @@ Abra um projeto → **Personalizar aparência** para editar nome, enviar logo PN
 ### Web 0.11 — categorias e ordem de artigos
 
 No projeto, use **Organizar artigos** para criar/renomear categorias, atribuir artigos e ordenar categorias/artigos com Subir/Descer. A prévia acompanha a organização, inclusive a marca escolhida. **Salvar organização** guarda na conta; a central pública só muda em **Atualizar publicação**, no mesmo link. Remover uma categoria mantém os artigos sem categoria. Categorias vazias não são publicadas; até 20 categorias de 80 caracteres. Organização não altera texto, histórico nem revisão dos artigos.
+
+## Browser 0.12 — editor visual
+
+Editar/Escrever artigo abre Tiptap com títulos, negrito, itálico, sublinhado, listas, citação, código, desfazer/refazer, links HTTPS e envio de imagens. Prévia usa o mesmo renderizador seguro da revisão e central. Imagens PNG/JPEG/WebP até4MiB são redimensionadas (máximo1200px) e recomprimidas para dataURL até48KiB, dentro do corpo versionado de128KiB. Ficam na conta/backup e só aparecem publicamente após revisão e confirmação. Remover imagem é reversível com Desfazer antes de sair do editor.
+
+Documentos antigos continuam Markdown; ao editar o conteúdo visualmente, o corpo passa a um documento JSON com prefixo versionado. Abrir sem editar não migra nem altera a revisão. Original e histórico são preservados. Nenhuma migração SQL ou novo grant é necessário: os campos existentes continuam strings e as quotas/CAS continuam vigentes. O leitor aceita apenas nós e atributos permitidos; imagens externas/SVG/HTML ativo e links fora de HTTPS são recusados. Colar não importa imagens: use Imagem.
+
+Editor baseado no [Tiptap](https://tiptap.dev/docs/editor/getting-started/install/vanilla-javascript), distribuído localmente sem CDN em tempo de uso. Fontes de integração em editor-src/vendor.mjs, versões fixas no package-lock.json e licenças em site/browser/editor-licenses.txt. Para reconstruir: npm ci; npm run build:editor. O build Pages usa o bundle previamente revisado. Testes: node --test scripts/tests/*.test.mjs.

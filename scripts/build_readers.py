@@ -281,7 +281,7 @@ def compile_tree(root):
             'site/workspace-entry.html': None,
             **{'site/help/' + name: 'help/' + name for name in ('index.html','style.css','reader.mjs','view.mjs')},
             **{'site/browser/' + name: 'browser/' + name for name in
-               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs', 'autosave.mjs')}}
+               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs', 'autosave.mjs', 'rich.mjs', 'editor.mjs', 'editor-vendor.mjs', 'editor-licenses.txt')}}
     for source, target in site.items():
         raw = read_file(root / source); privacy(raw.decode('utf-8')); inputs[source] = raw
         if target: output[target] = raw

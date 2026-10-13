@@ -11,3 +11,5 @@
 # Arquivos locais produzidos pelos controles Python; não são conteúdo público.
 __pycache__/
 *.py[cod]
+
+node_modules/

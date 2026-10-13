@@ -1,3 +1,4 @@
+import {RICH_PREFIX,decodeRich,renderRich} from './rich.mjs';
 // Browser edition: portable data and rendering, no network or dependencies.
 export const FORMAT = 'knowledge-workspace-browser-1';
 export const LIMIT = 8 * 1024 * 1024;
@@ -13,11 +14,12 @@ export function newProject(name) {
 }
 export function newDocument(title, body='', filename='') {
   required(string(title,160) && title.trim(), 'Informe um título com até 160 caracteres.');
-  required(string(body,131072), 'Documento maior que 128 KiB de texto.');
+  required(string(body,131072), 'Documento maior que 128 KiB de texto.');if(body.startsWith(RICH_PREFIX))decodeRich(body);
   return {id:uid(), title:title.trim(), body, filename, original:body, revision:1, review:null, history:[]};
 }
 export function changeDocument(doc, title, body) {
   required(string(title,160) && title.trim() && string(body,131072), 'Confira o título e o limite de texto.');
+  if(body.startsWith(RICH_PREFIX))decodeRich(body);
   if (doc.title===title.trim() && doc.body===body) return false;
   doc.history.push({title:doc.title,body:doc.body,revision:doc.revision,at:new Date().toISOString()});
   doc.title=title.trim(); doc.body=body; doc.revision++; return true;
@@ -36,6 +38,7 @@ export function validateProject(p) {
   for (const d of p.documents) {
     required(d && /^[a-zA-Z0-9-]{1,80}$/.test(d.id) && !ids.has(d.id), 'Identificador de artigo inválido ou repetido.'); ids.add(d.id);
     required(string(d.title,160) && d.title.trim() && string(d.body,131072) && string(d.original,131072) && string(d.filename,200), 'Artigo inválido ou muito grande.');
+    if(d.body.startsWith(RICH_PREFIX))decodeRich(d.body);
     required(!d.filename || !filenames.has(d.filename.toLowerCase()), 'Nome de arquivo repetido.'); if(d.filename) filenames.add(d.filename.toLowerCase());
     required(Number.isSafeInteger(d.revision) && d.revision>0 && Array.isArray(d.history), 'Histórico inválido.');
     required(d.review===null || (d.review && Number.isSafeInteger(d.review.revision) && d.review.revision>0 && d.review.revision<=d.revision && string(d.review.note,2000) && string(d.review.at,40)), 'Revisão inválida.');
@@ -79,6 +82,7 @@ function inline(text, docs) {
   return out+escape(text.slice(start));
 }
 export function markdown(text,docs=[]) {
+  if(text.startsWith(RICH_PREFIX)){try{return renderRich(text);}catch{return '<p>Conteúdo visual inválido. Reabra o artigo no Workspace.</p>';}}
   let out='',code=null,list=null;
   const endList=()=>{if(list){out+='</'+list+'>';list=null;}};
   for(const line of text.replace(/\r\n?/g,'\n').split('\n')) {
@@ -98,7 +102,7 @@ export function publicHTML(p) {
   const links=groups.map(g=>'<section data-help-group>'+ (g.name?'<h2>'+escape(g.name)+'</h2>':'')+'<ul>'+g.documents.map(d=>'<li><a href="#article-'+d.id+'">'+escape(d.title)+'</a></li>').join('')+'</ul></section>').join('');
   const articles=groups.map(g=>'<section data-help-group>'+(g.name?'<h2>'+escape(g.name)+'</h2>':'')+g.documents.map(d=>'<article data-category-name="'+escape(g.name)+'" id="article-'+d.id+'"><h2>'+escape(d.title)+'</h2>'+markdown(d.body,p.documents)+'</article>').join('')+'</section>').join('');
   // Only explicitly public fields enter this document. No originals, notes or history.
-  return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+escape(p.name)+'</title><style>body{max-width:920px;margin:40px auto;padding:0 24px;font:18px/1.65 system-ui;color:#213d36;background:#fafbf8}h1,h2,h3{line-height:1.2}a{color:#236349}input{font:inherit;padding:12px;width:90%;max-width:500px;border:1px solid #70877b;border-radius:8px}article{border-top:1px solid #b4c4b9;padding:28px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#e9f0e9;padding:16px}code{overflow-wrap:anywhere}[hidden]{display:none}header{border-top:6px solid '+b.primaryColor+';background:'+b.headerColor+';color:'+b.headerText+';padding:28px;border-radius:16px}header a{color:inherit}.help-logo{max-width:180px;height:80px;object-fit:contain;object-position:left}nav a{background:'+b.primaryColor+';color:'+b.primaryText+';display:inline-block;padding:8px;border-radius:8px}input{background:white;color:black}</style><header>'+logoHTML(p)+'<p>Central de ajuda</p><h1>'+escape(p.name)+'</h1><label for="search">Buscar nesta central</label><br><input id="search" type="search" placeholder="Digite palavras do artigo"><p id="count" role="status"></p><nav aria-label="Artigos">'+links+'</nav></header><main>'+articles+'</main><footer>Central criada com Knowledge Workspace. Conteúdo revisado pelo operador.</footer><script>const input=document.getElementById("search"),articles=[...document.querySelectorAll("article")],links=[...document.querySelectorAll("nav li")];const norm=s=>s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();input.oninput=()=>{const words=norm(input.value).split(/\\s+/).filter(Boolean);let n=0;articles.forEach((a,i)=>{const show=words.every(w=>norm(a.textContent+" "+a.dataset.categoryName).includes(w));a.hidden=!show;links[i].hidden=!show;if(show)n++});document.querySelectorAll("[data-help-group]").forEach(g=>g.hidden=!g.querySelector("article:not([hidden]),li:not([hidden])"));document.getElementById("count").textContent=n+" artigo(s) encontrado(s)"};<\/script></html>';
+  return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+escape(p.name)+'</title><style>body{max-width:920px;margin:40px auto;padding:0 24px;font:18px/1.65 system-ui;color:#213d36;background:#fafbf8}h1,h2,h3{line-height:1.2}a{color:#236349}input{font:inherit;padding:12px;width:90%;max-width:500px;border:1px solid #70877b;border-radius:8px}article{border-top:1px solid #b4c4b9;padding:28px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#e9f0e9;padding:16px}code{overflow-wrap:anywhere}[hidden]{display:none}header{border-top:6px solid '+b.primaryColor+';background:'+b.headerColor+';color:'+b.headerText+';padding:28px;border-radius:16px}header a{color:inherit}.help-logo{max-width:180px;height:80px;object-fit:contain;object-position:left}nav a{background:'+b.primaryColor+';color:'+b.primaryText+';display:inline-block;padding:8px;border-radius:8px}input{background:white;color:black}.article-image{max-width:100%;height:auto}blockquote{border-left:3px solid #aab8ab;padding-left:16px}</style><header>'+logoHTML(p)+'<p>Central de ajuda</p><h1>'+escape(p.name)+'</h1><label for="search">Buscar nesta central</label><br><input id="search" type="search" placeholder="Digite palavras do artigo"><p id="count" role="status"></p><nav aria-label="Artigos">'+links+'</nav></header><main>'+articles+'</main><footer>Central criada com Knowledge Workspace. Conteúdo revisado pelo operador.</footer><script>const input=document.getElementById("search"),articles=[...document.querySelectorAll("article")],links=[...document.querySelectorAll("nav li")];const norm=s=>s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();input.oninput=()=>{const words=norm(input.value).split(/\\s+/).filter(Boolean);let n=0;articles.forEach((a,i)=>{const show=words.every(w=>norm(a.textContent+" "+a.dataset.categoryName).includes(w));a.hidden=!show;links[i].hidden=!show;if(show)n++});document.querySelectorAll("[data-help-group]").forEach(g=>g.hidden=!g.querySelector("article:not([hidden]),li:not([hidden])"));document.getElementById("count").textContent=n+" artigo(s) encontrado(s)"};<\/script></html>';
 }
 
 export const DEFAULT_BRANDING=Object.freeze({primaryColor:'#235e43',headerColor:'#edf3eb',logo:''});
