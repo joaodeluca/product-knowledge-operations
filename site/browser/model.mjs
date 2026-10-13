@@ -8,6 +8,14 @@ const fail = message => { throw new Error(message); };
 const required = (test, message) => { if (!test) fail(message); };
 const string = (v, max) => typeof v === 'string' && v.length <= max;
 export const current = doc => doc.review?.revision === doc.revision;
+// Missing flag preserves the selection of projects made before 0.13.
+export const included = doc => doc.publish !== false;
+export const selectedDocuments = p => p.documents.filter(included);
+export const readyToPublish = p => selectedDocuments(p).length>0 && selectedDocuments(p).every(current);
+export function publicationView(p) {
+  const documents=selectedDocuments(p);
+  return {...p,documents,links:documents,categories:(p.categories||[]).filter(c=>documents.some(d=>d.categoryId===c.id))};
+}
 export function newProject(name) {
   required(string(name,120) && name.trim(), 'Informe um nome com até 120 caracteres.');
   return {id:uid(), name:name.trim(), version:0, createdAt:new Date().toISOString(), documents:[], publications:[]};
@@ -15,7 +23,7 @@ export function newProject(name) {
 export function newDocument(title, body='', filename='') {
   required(string(title,160) && title.trim(), 'Informe um título com até 160 caracteres.');
   required(string(body,131072), 'Documento maior que 128 KiB de texto.');if(body.startsWith(RICH_PREFIX))decodeRich(body);
-  return {id:uid(), title:title.trim(), body, filename, original:body, revision:1, review:null, history:[]};
+  return {id:uid(), title:title.trim(), body, filename, original:body, revision:1, review:null, publish:false, history:[]};
 }
 export function changeDocument(doc, title, body) {
   required(string(title,160) && title.trim() && string(body,131072), 'Confira o título e o limite de texto.');
@@ -38,6 +46,7 @@ export function validateProject(p) {
   for (const d of p.documents) {
     required(d && /^[a-zA-Z0-9-]{1,80}$/.test(d.id) && !ids.has(d.id), 'Identificador de artigo inválido ou repetido.'); ids.add(d.id);
     required(string(d.title,160) && d.title.trim() && string(d.body,131072) && string(d.original,131072) && string(d.filename,200), 'Artigo inválido ou muito grande.');
+    required(d.publish===undefined || typeof d.publish==='boolean','Seleção de publicação inválida.');
     if(d.body.startsWith(RICH_PREFIX))decodeRich(d.body);
     required(!d.filename || !filenames.has(d.filename.toLowerCase()), 'Nome de arquivo repetido.'); if(d.filename) filenames.add(d.filename.toLowerCase());
     required(Number.isSafeInteger(d.revision) && d.revision>0 && Array.isArray(d.history), 'Histórico inválido.');
@@ -96,7 +105,8 @@ export function markdown(text,docs=[]) {
   endList();if(code!==null)out+='<pre><code>'+escape(code.join('\n'))+'</code></pre>';return out;
 }
 export function publicHTML(p) {
-  required(p.documents.length>0 && p.documents.every(current),'Revise todos os artigos salvos antes de gerar a central.');
+  required(readyToPublish(p),'Inclua pelo menos um artigo e revise apenas os selecionados para a central.');
+  p=publicationView(p);
   const b=theme(p);
   const groups=articleGroups(p);
   const links=groups.map(g=>'<section data-help-group>'+ (g.name?'<h2>'+escape(g.name)+'</h2>':'')+'<ul>'+g.documents.map(d=>'<li><a href="#article-'+d.id+'">'+escape(d.title)+'</a></li>').join('')+'</ul></section>').join('');

@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {newProject,newDocument,changeDocument,reviewDocument,current,markdown,publicHTML,makeBackup,readBackup,checksum} from '../../site/browser/model.mjs';
-const fixture=()=>{const p=newProject('Ajuda');p.documents.push(newDocument('Uso','Texto público','uso.md'));return p;};
+const fixture=()=>{const p=newProject('Ajuda');p.documents.push({...newDocument('Uso','Texto público','uso.md'),publish:true});return p;};
 test('edits expire review, no-op does not create history and original is preserved',()=>{
  const p=fixture(),d=p.documents[0];reviewDocument(d,'Conferido');assert(current(d));assert.equal(changeDocument(d,d.title,d.body),false);assert.equal(d.history.length,0);
  changeDocument(d,'Uso novo','Nova instrução');assert(!current(d));assert.equal(d.original,'Texto público');assert.equal(d.history[0].body,'Texto público');assert.throws(()=>publicHTML(p));reviewDocument(d,'Conferência nova');assert(current(d));

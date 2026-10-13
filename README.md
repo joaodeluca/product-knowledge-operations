@@ -103,3 +103,7 @@ Editar/Escrever artigo abre Tiptap com títulos, negrito, itálico, sublinhado, 
 Documentos antigos continuam Markdown; ao editar o conteúdo visualmente, o corpo passa a um documento JSON com prefixo versionado. Abrir sem editar não migra nem altera a revisão. Original e histórico são preservados. Nenhuma migração SQL ou novo grant é necessário: os campos existentes continuam strings e as quotas/CAS continuam vigentes. O leitor aceita apenas nós e atributos permitidos; imagens externas/SVG/HTML ativo e links fora de HTTPS são recusados. Colar não importa imagens: use Imagem.
 
 Editor baseado no [Tiptap](https://tiptap.dev/docs/editor/getting-started/install/vanilla-javascript), distribuído localmente sem CDN em tempo de uso. Fontes de integração em editor-src/vendor.mjs, versões fixas no package-lock.json e licenças em site/browser/editor-licenses.txt. Para reconstruir: npm ci; npm run build:editor. O build Pages usa o bundle previamente revisado. Testes: node --test scripts/tests/*.test.mjs.
+
+### Workspace web 0.13 — publicar só o que está pronto
+
+Cada artigo pode ficar como rascunho ou entrar na próxima publicação. Artigos novos começam como rascunho. Inclua os desejados, confira apenas esses artigos e abra a prévia antes de publicar. A lista distingue seleção para a próxima versão e artigos atualmente no ar. Alterar a seleção não muda o link até confirmar Atualizar publicação; para retirar toda a central, use Retirar do ar. Categorias vazias e aliases de rascunhos ficam fora da versão pública. A seleção acompanha o backup e o salvamento na conta.

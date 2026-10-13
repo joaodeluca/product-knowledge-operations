@@ -76,3 +76,11 @@ Nome e aparência entram também no backup JSON e nos novos downloads HTML. Snap
 Após branding.sql, aplique organization.sql uma vez. Campo opcional categories preserva a ordem de categorias, documents preserva a ordem de artigos dentro de cada grupo; categoryId opcional referencia uma categoria. Sem categoria fica por último. Projetos anteriores mantêm sua ordem. Validação recusa IDs/nomes duplicados, referências ausentes e categorias extras/inválidas; no máximo 20 categorias e 80 caracteres por nome.
 
 A publicação projeta apenas id/name de categorias não vazias e categoryId dos artigos, mantendo marca e campos públicos anteriores. Não altera snapshots históricos nem grants. Busca inclui o nome da categoria e oculta grupos sem resultados. Backup e novos HTMLs preservam organização; alterações exigem salvar privado e confirmar publicação. CAS existente protege edições em outra aba/dispositivo.
+
+## Seleção de artigos (0.13)
+
+Após organization.sql, aplique selection.sql uma vez. Nenhum grant novo, mudança de acesso ou publicação automática. O campo booleano publish é opcional: ausente conserva a seleção do legado; artigos novos usam false (rascunho). O servidor publica apenas artigos selecionados com revisão vigente, filtra categorias e aliases para esse conjunto e recusa seleção vazia. CAS e limites anteriores permanecem. Metadados autenticados incluem IDs dos artigos da última versão para distinguir seleção privada de conteúdo no ar.
+
+Manter como rascunho salva a escolha; a versão pública só muda após Atualizar publicação. Retirar todos usa Retirar do ar. Selecionar um artigo não revisa seu conteúdo, e editá-lo continua vencendo sua revisão. Backup preserva seleção e histórico. HTML baixado e prévias também excluem rascunhos. Links escritos manualmente para artigos excluídos podem deixar de funcionar; não incluímos aliases privados para resolvê-los.
+
+`KW_TEST_CONTAINER=CONTAINER_DESCARTAVEL python3 cloud/supabase/test-selection.py` verifica seleção, rascunhos não revisados, aliases/categorias, legado, CAS e recusa de seleção vazia em PostgreSQL isolado com identidades simuladas.

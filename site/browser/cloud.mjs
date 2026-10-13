@@ -25,7 +25,7 @@ export function cloudStore(config,{fetcher=globalThis.fetch,now=Date.now,storage
       if(response.status===413)throw Error('Limite de armazenamento da conta atingido.');
       const body=await response.json().catch(()=>({}));
       if(body.code==='23514'){
-        const publicationErrors={'Review every article before publishing':'Revise a versão atual de todos os artigos antes de publicar.','Publication exceeds 2 MiB':'Esta central excede o limite público de 2 MiB.','Publication history limit reached':'Esta central chegou ao limite de 20 versões publicadas. As versões existentes foram preservadas.','Publication storage limit reached':'O histórico de centrais publicadas atingiu o limite de 8 MiB da conta.'};
+        const publicationErrors={'Select at least one article':'Inclua pelo menos um artigo ou use Retirar do ar.','Review selected articles before publishing':'Revise a versão atual dos artigos selecionados para a central.','Review every article before publishing':'Revise a versão atual de todos os artigos antes de publicar.','Publication exceeds 2 MiB':'Esta central excede o limite público de 2 MiB.','Publication history limit reached':'Esta central chegou ao limite de 20 versões publicadas. As versões existentes foram preservadas.','Publication storage limit reached':'O histórico de centrais publicadas atingiu o limite de 8 MiB da conta.'};
         throw Error(publicationErrors[body.message]||'Dados ou limite da conta inválidos. São permitidos 20 projetos e 8 MiB no total.');
       }
       throw Error(write?'O servidor não confirmou a gravação. Preserve seu texto e confira a lista de projetos antes de repetir.':'Não foi possível abrir a conta. Tente novamente mais tarde.');
@@ -61,6 +61,7 @@ export function cloudStore(config,{fetcher=globalThis.fetch,now=Date.now,storage
   function helpMeta(value,nullable=false){
     if(value===null&&nullable)return null;
     if(!value||! /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(value.public_id)||!Number.isSafeInteger(value.revision)||value.revision<1||typeof value.live!=='boolean'||!Number.isSafeInteger(value.source_version)||value.source_version<1||typeof value.published_at!=='string'||!Number.isFinite(Date.parse(value.published_at)))throw Error('Confirmação de publicação inesperada. Reabra o projeto para conferir.');
+    if(value.article_ids!==undefined&&(!Array.isArray(value.article_ids)||value.article_ids.length>50||value.article_ids.some(id=>typeof id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(id))))throw Error('Status de artigos inválido. Reabra o projeto.');
     return value;
   }
   return {mode:'cloud',sessionKey,
