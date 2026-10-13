@@ -70,3 +70,9 @@ Após schema.sql e publication.sql, aplique branding.sql uma vez. A migração v
 Personalizar aparência altera o nome da central, logo e cores com prévia ampla/celular. Salvar aparência guarda na conta com proteção contra conflito; cancelar descarta a prévia. PNG/JPEG/WebP de até 2 MiB são decodificados e normalizados para PNG de até 512×512, sem URL externa/metadados do original; resultado limitado a 192 KiB incluindo data URL. SVG não é aceito. O servidor valida tipo, tamanho, cabeçalho/dimensões PNG e cores hexadecimais, e a projeção pública usa campos explícitos. Logos contam nas quotas existentes. Texto do cabeçalho e botões usa preto/branco conforme contraste.
 
 Nome e aparência entram também no backup JSON e nos novos downloads HTML. Snapshots já publicados só mudam por Atualizar publicação, no mesmo endereço. Os limites e a dependência do Supabase Free permanecem.
+
+## Categorias e ordem (0.11)
+
+Após branding.sql, aplique organization.sql uma vez. Campo opcional categories preserva a ordem de categorias, documents preserva a ordem de artigos dentro de cada grupo; categoryId opcional referencia uma categoria. Sem categoria fica por último. Projetos anteriores mantêm sua ordem. Validação recusa IDs/nomes duplicados, referências ausentes e categorias extras/inválidas; no máximo 20 categorias e 80 caracteres por nome.
+
+A publicação projeta apenas id/name de categorias não vazias e categoryId dos artigos, mantendo marca e campos públicos anteriores. Não altera snapshots históricos nem grants. Busca inclui o nome da categoria e oculta grupos sem resultados. Backup e novos HTMLs preservam organização; alterações exigem salvar privado e confirmar publicação. CAS existente protege edições em outra aba/dispositivo.

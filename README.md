@@ -91,3 +91,7 @@ assinatura, agenda ou promessa comercial.
 ### Web 0.10 — identidade visual com prévia
 
 Abra um projeto → **Personalizar aparência** para editar nome, enviar logo PNG/JPEG/WebP e escolher cor principal/fundo do cabeçalho. A prévia acompanha a edição, com opção de largura de celular. **Salvar aparência** guarda na conta; **Atualizar publicação** confirma a versão pública no mesmo link. Cancelar mantém a aparência anterior. Projetos antigos continuam válidos. Logo normalizado, cores validadas, contraste automático do texto; sem hospedagem ou plano pago adicional.
+
+### Web 0.11 — categorias e ordem de artigos
+
+No projeto, use **Organizar artigos** para criar/renomear categorias, atribuir artigos e ordenar categorias/artigos com Subir/Descer. A prévia acompanha a organização, inclusive a marca escolhida. **Salvar organização** guarda na conta; a central pública só muda em **Atualizar publicação**, no mesmo link. Remover uma categoria mantém os artigos sem categoria. Categorias vazias não são publicadas; até 20 categorias de 80 caracteres. Organização não altera texto, histórico nem revisão dos artigos.

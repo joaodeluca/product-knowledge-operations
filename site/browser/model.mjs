@@ -31,6 +31,7 @@ export function validateProject(p) {
   required(p && /^[a-zA-Z0-9-]{1,80}$/.test(p.id) && string(p.name,120) && p.name.trim(), 'Projeto inválido.');
   required(Number.isSafeInteger(p.version) && p.version>=0 && string(p.createdAt,40), 'Versão inválida.');
   required(Array.isArray(p.documents) && p.documents.length<=50 && Array.isArray(p.publications) && p.publications.length<=20, 'Limite: 50 artigos e 20 publicações por projeto.');
+  validateOrganization(p);
   const ids=new Set(), filenames=new Set();
   for (const d of p.documents) {
     required(d && /^[a-zA-Z0-9-]{1,80}$/.test(d.id) && !ids.has(d.id), 'Identificador de artigo inválido ou repetido.'); ids.add(d.id);
@@ -93,10 +94,11 @@ export function markdown(text,docs=[]) {
 export function publicHTML(p) {
   required(p.documents.length>0 && p.documents.every(current),'Revise todos os artigos salvos antes de gerar a central.');
   const b=theme(p);
-  const links=p.documents.map(d=>'<li><a href="#article-'+d.id+'">'+escape(d.title)+'</a></li>').join('');
-  const articles=p.documents.map(d=>'<article id="article-'+d.id+'"><h2>'+escape(d.title)+'</h2>'+markdown(d.body,p.documents)+'</article>').join('');
+  const groups=articleGroups(p);
+  const links=groups.map(g=>'<section data-help-group>'+ (g.name?'<h2>'+escape(g.name)+'</h2>':'')+'<ul>'+g.documents.map(d=>'<li><a href="#article-'+d.id+'">'+escape(d.title)+'</a></li>').join('')+'</ul></section>').join('');
+  const articles=groups.map(g=>'<section data-help-group>'+(g.name?'<h2>'+escape(g.name)+'</h2>':'')+g.documents.map(d=>'<article data-category-name="'+escape(g.name)+'" id="article-'+d.id+'"><h2>'+escape(d.title)+'</h2>'+markdown(d.body,p.documents)+'</article>').join('')+'</section>').join('');
   // Only explicitly public fields enter this document. No originals, notes or history.
-  return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+escape(p.name)+'</title><style>body{max-width:920px;margin:40px auto;padding:0 24px;font:18px/1.65 system-ui;color:#213d36;background:#fafbf8}h1,h2,h3{line-height:1.2}a{color:#236349}input{font:inherit;padding:12px;width:90%;max-width:500px;border:1px solid #70877b;border-radius:8px}article{border-top:1px solid #b4c4b9;padding:28px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#e9f0e9;padding:16px}code{overflow-wrap:anywhere}[hidden]{display:none}header{border-top:6px solid '+b.primaryColor+';background:'+b.headerColor+';color:'+b.headerText+';padding:28px;border-radius:16px}header a{color:inherit}.help-logo{max-width:180px;height:80px;object-fit:contain;object-position:left}nav a{background:'+b.primaryColor+';color:'+b.primaryText+';display:inline-block;padding:8px;border-radius:8px}input{background:white;color:black}</style><header>'+logoHTML(p)+'<p>Central de ajuda</p><h1>'+escape(p.name)+'</h1><label for="search">Buscar nesta central</label><br><input id="search" type="search" placeholder="Digite palavras do artigo"><p id="count" role="status"></p><nav aria-label="Artigos"><ul>'+links+'</ul></nav></header><main>'+articles+'</main><footer>Central criada com Knowledge Workspace. Conteúdo revisado pelo operador.</footer><script>const input=document.getElementById("search"),articles=[...document.querySelectorAll("article")],links=[...document.querySelectorAll("nav li")];const norm=s=>s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();input.oninput=()=>{const words=norm(input.value).split(/\\s+/).filter(Boolean);let n=0;articles.forEach((a,i)=>{const show=words.every(w=>norm(a.textContent).includes(w));a.hidden=!show;links[i].hidden=!show;if(show)n++});document.getElementById("count").textContent=n+" artigo(s) encontrado(s)"};<\/script></html>';
+  return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+escape(p.name)+'</title><style>body{max-width:920px;margin:40px auto;padding:0 24px;font:18px/1.65 system-ui;color:#213d36;background:#fafbf8}h1,h2,h3{line-height:1.2}a{color:#236349}input{font:inherit;padding:12px;width:90%;max-width:500px;border:1px solid #70877b;border-radius:8px}article{border-top:1px solid #b4c4b9;padding:28px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#e9f0e9;padding:16px}code{overflow-wrap:anywhere}[hidden]{display:none}header{border-top:6px solid '+b.primaryColor+';background:'+b.headerColor+';color:'+b.headerText+';padding:28px;border-radius:16px}header a{color:inherit}.help-logo{max-width:180px;height:80px;object-fit:contain;object-position:left}nav a{background:'+b.primaryColor+';color:'+b.primaryText+';display:inline-block;padding:8px;border-radius:8px}input{background:white;color:black}</style><header>'+logoHTML(p)+'<p>Central de ajuda</p><h1>'+escape(p.name)+'</h1><label for="search">Buscar nesta central</label><br><input id="search" type="search" placeholder="Digite palavras do artigo"><p id="count" role="status"></p><nav aria-label="Artigos">'+links+'</nav></header><main>'+articles+'</main><footer>Central criada com Knowledge Workspace. Conteúdo revisado pelo operador.</footer><script>const input=document.getElementById("search"),articles=[...document.querySelectorAll("article")],links=[...document.querySelectorAll("nav li")];const norm=s=>s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();input.oninput=()=>{const words=norm(input.value).split(/\\s+/).filter(Boolean);let n=0;articles.forEach((a,i)=>{const show=words.every(w=>norm(a.textContent+" "+a.dataset.categoryName).includes(w));a.hidden=!show;links[i].hidden=!show;if(show)n++});document.querySelectorAll("[data-help-group]").forEach(g=>g.hidden=!g.querySelector("article:not([hidden]),li:not([hidden])"));document.getElementById("count").textContent=n+" artigo(s) encontrado(s)"};<\/script></html>';
 }
 
 export const DEFAULT_BRANDING=Object.freeze({primaryColor:'#235e43',headerColor:'#edf3eb',logo:''});
@@ -130,3 +132,24 @@ export async function prepareLogo(file){
   const logo=canvas.toDataURL('image/png');validateBranding({...DEFAULT_BRANDING,logo});return logo;
  }catch(e){throw Error(e.message.startsWith('Logo')||e.message.startsWith('Use')?e.message:'Não foi possível ler o logo. Escolha outra imagem.');}
 }
+
+export function validateOrganization(p){
+ const categories=p.categories===undefined?[]:p.categories;
+ required(Array.isArray(categories)&&categories.length<=20,'Use até 20 categorias.');
+ const ids=new Set(),names=new Set();
+ for(const c of categories){
+  required(c&&typeof c==='object'&&!Array.isArray(c)&&Object.keys(c).every(k=>['id','name'].includes(k))&&typeof c.id==='string'&&/^[a-zA-Z0-9-]{1,80}$/.test(c.id)&&!ids.has(c.id),'Categoria inválida ou repetida.');
+  required(string(c.name,80)&&c.name.trim()===c.name&&c.name.length>0&&!names.has(c.name.toLowerCase()),'Use nomes de categoria diferentes, com até 80 caracteres.');
+  ids.add(c.id);names.add(c.name.toLowerCase());
+ }
+ for(const d of p.documents)required(d.categoryId===undefined||(typeof d.categoryId==='string'&&(d.categoryId===''||ids.has(d.categoryId))),'Categoria do artigo não encontrada.');
+}
+export function articleGroups(p){
+ validateOrganization(p);
+ const groups=(p.categories||[]).map(c=>({...c,documents:p.documents.filter(d=>d.categoryId===c.id)})).filter(g=>g.documents.length);
+ groups.push({id:'',name:groups.length?'Sem categoria':'',documents:p.documents.filter(d=>!d.categoryId)});
+ return groups.filter(g=>g.documents.length);
+}
+export function moveItem(items,id,delta){const i=items.findIndex(x=>x.id===id),j=i+delta;if(i<0||j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]];}
+export function moveArticle(p,id,delta){const d=p.documents.find(x=>x.id===id);if(!d)return;const group=p.documents.filter(x=>(x.categoryId||'')===(d.categoryId||''));const i=group.findIndex(x=>x.id===id),other=group[i+delta];if(!other)return;const a=p.documents.indexOf(d),b=p.documents.indexOf(other);[p.documents[a],p.documents[b]]=[p.documents[b],p.documents[a]];}
+export function removeCategory(p,id){p.categories=p.categories.filter(c=>c.id!==id);for(const d of p.documents)if(d.categoryId===id)d.categoryId='';}
