@@ -44,6 +44,9 @@ class ReaderPipelineTest(unittest.TestCase):
         (self.repo/'site').mkdir()
         for name in ('workspace.html','workspace-site.css','workspace-entry.html'):
             (self.repo/'site'/name).write_bytes((MODULE.parent.parent/'site'/name).read_bytes())
+        (self.repo/'site/browser').mkdir()
+        for path in (MODULE.parent.parent/'site/browser').iterdir():
+            if path.is_file(): (self.repo/'site/browser'/path.name).write_bytes(path.read_bytes())
         self.out=self.root/'frozen-output'
 
     def tearDown(self): self.tmp.cleanup()
@@ -51,10 +54,10 @@ class ReaderPipelineTest(unittest.TestCase):
 
     def test_product_entry_and_page_are_bound_to_manifest_without_dist_mutation(self):
         original=(self.repo/'dist/library.html').read_bytes();self.build()
-        self.assertIn(b'workspace.html',(self.out/'library.html').read_bytes())
+        self.assertIn(b'browser/',(self.out/'library.html').read_bytes())
         self.assertEqual((self.out/'workspace.html').read_bytes(),(self.repo/'site/workspace.html').read_bytes())
         self.assertEqual((self.repo/'dist/library.html').read_bytes(),original)
-        for path in (self.repo/'site/workspace.html',self.repo/'site/workspace-entry.html'):
+        for path in (self.repo/'site/workspace.html',self.repo/'site/workspace-entry.html',self.repo/'site/browser/app.mjs'):
             raw=path.read_bytes();path.write_bytes(raw+b'changed')
             with self.assertRaises(ValueError):builder.check(self.repo,self.out)
             path.write_bytes(raw)

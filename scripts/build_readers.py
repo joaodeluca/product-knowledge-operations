@@ -78,7 +78,7 @@ def inventory(root):
             path = Path(folder) / name
             relative = path.relative_to(root).as_posix()
             require(not relative.startswith('.') and '/.' not in relative, 'Hidden public payload refused')
-            require(name.endswith(('.html', '.css', '.js', '.png', '.json', '.txt', '.md', '.csv', '.py', '.excalidraw'))
+            require(name.endswith(('.html', '.css', '.js', '.mjs', '.png', '.json', '.txt', '.md', '.csv', '.py', '.excalidraw'))
                     or relative == 'openrefine/files/handoff.openrefine.tar.gz', 'Unexpected public dist file')
             raw = read_file(path)
             if not name.endswith(('.png', '.tar.gz')): privacy(raw.decode('utf-8'))
@@ -278,7 +278,9 @@ def compile_tree(root):
     require('index.html' in output and 'library.html' in output, 'Existing entry/library required')
     # Fixed original product pages; historical dist and canonical guides stay untouched.
     site = {'site/workspace.html': 'workspace.html', 'site/workspace-site.css': 'workspace-site.css',
-            'site/workspace-entry.html': None}
+            'site/workspace-entry.html': None,
+            **{'site/browser/' + name: 'browser/' + name for name in
+               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs')}}
     for source, target in site.items():
         raw = read_file(root / source); privacy(raw.decode('utf-8')); inputs[source] = raw
         if target: output[target] = raw

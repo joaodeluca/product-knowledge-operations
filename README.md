@@ -10,6 +10,16 @@ O ensaio Excalidraw de 04/10 continua parcial: backup e restauração ficaram pe
 
 [Validar a configuração correta do Renovate](docs/renovate/VALIDATION.md) responde a uma dúvida pública específica com exemplos próprios executados no validador oficial. Não inclui implantação, autenticação ou manutenção do bot.
 
+## Abrir o Workspace no navegador
+
+**[Abrir a edição web 0.6](https://joaodeluca.github.io/product-knowledge-operations/browser/)** — prévia sem instalação, conta ou chave de IA. Crie um projeto, importe Markdown/texto próprio, edite com prévia, confira cada artigo e baixe uma central HTML com busca que funciona offline.
+
+Os projetos ficam no IndexedDB deste navegador e dispositivo. Nenhum documento é enviado ao servidor. Faça backup JSON privado para guardar originais, histórico, notas e publicações; a recuperação cria novos projetos, sem substituir os existentes. Limpar dados do site ou usar navegação privada pode apagar o trabalho. Não há sincronização automática ou compatibilidade com o backup ZIP da edição Python.
+
+Limites da prévia: 20 projetos/8 MiB no total, 50 artigos e 20 publicações por projeto. Markdown básico (títulos, listas, negrito, código e links HTTPS); sem imagens, anexos ou HTML ativo. Revisão é uma declaração do operador, não certificação independente. Edições vencem a revisão do artigo; publicações anteriores permanecem preservadas. Duas abas não podem sobrescrever silenciosamente a mesma versão.
+
+O código estático está em `site/browser/`, sem dependências ou APIs externas. O servidor entrega os arquivos do aplicativo; armazenamento, revisão, busca e geração ocorrem no navegador. A edição local Python abaixo permanece disponível com suas capacidades próprias.
+
 ## Executar o Knowledge Workspace
 
 [Conhecer o aplicativo e começar](https://joaodeluca.github.io/product-knowledge-operations/workspace.html). A biblioteca e a página inicial dão acesso ao produto; a visão geral guia importação, revisão individual, geração e download da central.
