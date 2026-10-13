@@ -47,6 +47,9 @@ class ReaderPipelineTest(unittest.TestCase):
         (self.repo/'site/browser').mkdir()
         for path in (MODULE.parent.parent/'site/browser').iterdir():
             if path.is_file(): (self.repo/'site/browser'/path.name).write_bytes(path.read_bytes())
+        (self.repo/'site/help').mkdir()
+        for path in (MODULE.parent.parent/'site/help').iterdir():
+            if path.is_file(): (self.repo/'site/help'/path.name).write_bytes(path.read_bytes())
         self.out=self.root/'frozen-output'
 
     def tearDown(self): self.tmp.cleanup()
@@ -57,7 +60,7 @@ class ReaderPipelineTest(unittest.TestCase):
         self.assertIn(b'browser/',(self.out/'library.html').read_bytes())
         self.assertEqual((self.out/'workspace.html').read_bytes(),(self.repo/'site/workspace.html').read_bytes())
         self.assertEqual((self.repo/'dist/library.html').read_bytes(),original)
-        for path in (self.repo/'site/workspace.html',self.repo/'site/workspace-entry.html',self.repo/'site/browser/app.mjs'):
+        for path in (self.repo/'site/workspace.html',self.repo/'site/workspace-entry.html',self.repo/'site/browser/app.mjs',self.repo/'site/help/reader.mjs'):
             raw=path.read_bytes();path.write_bytes(raw+b'changed')
             with self.assertRaises(ValueError):builder.check(self.repo,self.out)
             path.write_bytes(raw)

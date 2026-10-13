@@ -24,7 +24,10 @@ export function cloudStore(config,{fetcher=globalThis.fetch,now=Date.now,storage
       if(response.status===403)throw Error('Esta conta não tem acesso ao Workspace.');
       if(response.status===413)throw Error('Limite de armazenamento da conta atingido.');
       const body=await response.json().catch(()=>({}));
-      if(body.code==='23514')throw Error('Dados ou limite da conta inválidos. São permitidos 20 projetos e 8 MiB no total.');
+      if(body.code==='23514'){
+        const publicationErrors={'Review every article before publishing':'Revise a versão atual de todos os artigos antes de publicar.','Publication exceeds 2 MiB':'Esta central excede o limite público de 2 MiB.','Publication history limit reached':'Esta central chegou ao limite de 20 versões publicadas. As versões existentes foram preservadas.','Publication storage limit reached':'O histórico de centrais publicadas atingiu o limite de 8 MiB da conta.'};
+        throw Error(publicationErrors[body.message]||'Dados ou limite da conta inválidos. São permitidos 20 projetos e 8 MiB no total.');
+      }
       throw Error(write?'O servidor não confirmou a gravação. Preserve seu texto e confira a lista de projetos antes de repetir.':'Não foi possível abrir a conta. Tente novamente mais tarde.');
     }
     return response.status===204?null:response.json();
@@ -55,11 +58,19 @@ export function cloudStore(config,{fetcher=globalThis.fetch,now=Date.now,storage
     try{return await request('/rest/v1/rpc/'+name,args,access,write);}
     catch(e){if(e.authExpired){load();if(session?.access_token===access)clear();}throw e;}
   }
+  function helpMeta(value,nullable=false){
+    if(value===null&&nullable)return null;
+    if(!value||! /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(value.public_id)||!Number.isSafeInteger(value.revision)||value.revision<1||typeof value.live!=='boolean'||!Number.isSafeInteger(value.source_version)||value.source_version<1||typeof value.published_at!=='string'||!Number.isFinite(Date.parse(value.published_at)))throw Error('Confirmação de publicação inesperada. Reabra o projeto para conferir.');
+    return value;
+  }
   return {mode:'cloud',sessionKey,
     async resume(){load();if(!session)return null;owner=session.user.id;return this.listProjects();},
     get user(){return session?{id:session.user.id,email:session.user.email}:null;},
     async signIn(email,password){accept(await request('/auth/v1/token?grant_type=password',{email,password}));owner=session.user.id;const access=session.access_token;try{return await this.listProjects();}catch(e){load();if(session?.access_token===access)clear();throw e;}},
     async signOut(){load();const access=session?.access_token;clear();if(access)await request('/auth/v1/logout?scope=local',{},access);},
+    async helpStatus(projectId){return helpMeta(await rpc('kw_help_status',{p_project_id:projectId}),true);},
+    async publishHelp(projectId,version,revision){const result=helpMeta(await rpc('kw_publish_help',{p_project_id:projectId,p_expected_version:version,p_expected_publication_revision:revision},true));if(!result.live||result.source_version!==version)throw Error('Publicação não confirmada. Reabra o projeto para conferir.');return result;},
+    async unpublishHelp(projectId,revision){const result=helpMeta(await rpc('kw_unpublish_help',{p_project_id:projectId,p_expected_publication_revision:revision},true),true);if(result?.live)throw Error('Retirada não confirmada. Reabra o projeto para conferir.');return result;},
     async listProjects(){const projects=await rpc('kw_list_projects',{});if(!Array.isArray(projects))throw Error('Resposta de projetos inválida.');projects.forEach(validateProject);return projects;},
     async saveProject(project,expectedVersion){validateProject(project);const saved=await rpc('kw_save_project',{p_project:project,p_expected_version:expectedVersion},true);validateProject(saved);if(saved.id!==project.id||saved.version!==(expectedVersion??0)+1)throw Error('Confirmação inesperada. Reabra o projeto antes de continuar.');return saved;},
     async restoreCopies(projects){projects.forEach(validateProject);const copies=projects.map(p=>({...structuredClone(p),id:uid(),name:(p.name+' · recuperado').slice(0,120),version:1}));const saved=await rpc('kw_restore_projects',{p_projects:copies},true);if(!Array.isArray(saved)||saved.length!==copies.length)throw Error('Confirmação inesperada da recuperação. Confira a lista antes de repetir.');saved.forEach(validateProject);return saved;}

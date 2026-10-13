@@ -1,6 +1,6 @@
 # Salvamento privado entre dispositivos
 
-A edição web 0.8 acrescenta uma conta pessoal com projetos privados no Supabase. O titular autorizou e criou o recurso Free, definiu suas credenciais e autorizou seu usuário. `site/browser/cloud-config.mjs` contém somente o endereço do projeto e a chave pública publishable. Esses arquivos não criam contas ou contratam planos.
+A edição web 0.9 acrescenta uma conta pessoal com projetos privados no Supabase. O titular autorizou e criou o recurso Free, definiu suas credenciais e autorizou seu usuário. `site/browser/cloud-config.mjs` contém somente o endereço do projeto e a chave pública publishable. Esses arquivos não criam contas ou contratam planos.
 
 ## Resultado proposto
 
@@ -50,3 +50,15 @@ Referências consultadas em 13/10/2026: [Auth com senha](https://supabase.com/do
 A integração hospedada foi conferida em 13/10/2026 com o login feito pelo titular, duas sessões em origens locais distintas e Supabase real: criação/gravação/leitura compartilhada, conflito recusado, rascunho preservado, cópia local consentida, backup validado e logout de uma sessão sem apagar os projetos. Não representa teste em dois dispositivos físicos, aceitação externa ou auditoria independente.
 
 Na edição0.8, o editor salva após900ms sem digitação e serializa alterações feitas durante gravações. Confirma somente após resposta válida. Uma resposta perdida exige conferência da versão remota antes de qualquer nova tentativa; JSONB pode reordenar chaves, por isso a comparação é estrutural. Conflito mantém texto, oferece download do rascunho e não sobrescreve automaticamente. A saída da tela aguarda gravação ou pede descarte explícito. Originais e histórico continuam privados. [Sessões Supabase](https://supabase.com/docs/guides/auth/sessions).
+
+## Centrais publicadas por link (0.9)
+
+A migração aditiva `publication.sql` deve ser aplicada após `schema.sql`. Não republicar a migração base em produção. A nova tabela privada `help_sites` mantém snapshots imutáveis e um identificador público aleatório estável por projeto. Nada existente se torna público ao aplicar a migração.
+
+As funções autenticadas `kw_help_status`, `kw_publish_help` e `kw_unpublish_help` exigem membro habilitado e só administram projetos do titular. A publicação bloqueia a mesma linha das gravações privadas, confere versão e revisão de todos os artigos e constrói no servidor uma projeção restrita: nome da central, IDs, títulos e textos, além de aliases de links já presentes nesses textos. Nunca copia originais, notas de revisão, histórico privado ou campos arbitrários do cliente. Limites: 2 MiB por snapshot, 20 versões por central, 8 MiB de versões publicadas por titular. Respostas repetidas da mesma publicação são idempotentes.
+
+Somente `kw_read_help(UUID)` permite execução anônima. Retorna a última versão de uma central ativa; não lista centrais, não lê projetos privados e retorna 404 após retirada. Tabelas continuam sem acesso direto. O leitor em `site/help/` usa apenas chave pública, sem sessão ou cabeçalho de autorização, com cache desabilitado. Qualquer pessoa com o link pode ler; UUID e noindex não tornam uma publicação privada. Retirar do ar impede novas respostas, mas não revoga cópias já feitas.
+
+O backup JSON do Workspace conserva projetos e downloads HTML, mas não IDs públicos, status ou histórico hospedado. Recuperação cria projetos privados novos; publicar essas cópias gera novos links. A edição offline e os arquivos históricos permanecem preservados.
+
+`KW_TEST_CONTAINER=CONTAINER_DESCARTAVEL python3 cloud/supabase/test-publication.py` verifica a base e a migração nova em PostgreSQL isolado, com duas identidades simuladas. Inclui privilégio anônimo restrito, dono, revisão/versão, projeção de campos, rascunho privado, atualização estável, retirada, republicação e repetição idempotente. Não equivale a teste no gateway hospedado.

@@ -21,6 +21,8 @@ def configure(url=None,key=None):
     settings=ROOT/'site/browser/cloud-config.mjs'
     settings.write_text('// Public deployment settings only; no secret keys.\nexport const cloudConfig = '+json.dumps(config,ensure_ascii=False)+';\n')
     page.write_text(source)
+    reader=ROOT/'site/help/index.html'
+    if reader.exists():reader.write_text(re.sub(r"connect-src [^;]+;", "connect-src "+("'none'" if config is None else origin)+";",reader.read_text()))
     print('Cloud configuration disabled.' if config is None else 'Prepared public settings and exact CSP origin: '+origin)
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--url');p.add_argument('--publishable-key');p.add_argument('--disable',action='store_true');a=p.parse_args()

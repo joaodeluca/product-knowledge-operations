@@ -62,3 +62,13 @@ test('a dirty tab cannot write under another account after shared login changes'
  const storage=memory();let who=session,writeCalls=0;const fetcher=async url=>{if(url.includes('token?'))return json(who);if(url.endsWith('kw_save_project'))writeCalls++;return json([]);};
  const a=cloudStore(config,{storage,fetcher});await a.signIn('a','a');const b=cloudStore(config,{storage,fetcher});who={...session,user:{id:'second-user'}};await b.signIn('b','b');await assert.rejects(()=>a.saveProject(newProject('Draft'),null),/conta mudou/);assert.equal(writeCalls,0);
 });
+
+test('publication mutations require a valid acknowledgement with the intended live state and source version',async()=>{
+ let result={public_id:'abcdef01-2345-6789-abcd-0123456789ab',revision:1,live:true,source_version:4,published_at:new Date().toISOString()};
+ const {api}=client(url=>url.includes('/token?')?json(session):url.endsWith('kw_list_projects')?json([]):json(result));await api.signIn('x','y');
+ assert.equal((await api.publishHelp('own',4,0)).live,true);
+ await assert.rejects(()=>api.publishHelp('own',5,0),/não confirmada/);
+ await assert.rejects(()=>api.unpublishHelp('own',1),/não confirmada/);
+ result={...result,live:false};assert.equal((await api.unpublishHelp('own',1)).live,false);
+ result={public_id:'javascript:invalid'};await assert.rejects(()=>api.helpStatus('own'),/inesperada/);
+});
