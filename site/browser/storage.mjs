@@ -10,9 +10,11 @@ export async function openStore() {
   });
 }
 export async function listProjects(db) {
+  if(db.mode==='cloud')return db.listProjects();
   return new Promise((resolve,reject)=>{const r=db.transaction('projects').objectStore('projects').getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
 }
 export async function saveProject(db,project,expectedVersion) {
+  if(db.mode==='cloud')return db.saveProject(project,expectedVersion);
   validateProject(project);
   return new Promise((resolve,reject)=>{
     const tx=db.transaction('projects','readwrite'),store=tx.objectStore('projects');let reason, saved;
@@ -28,6 +30,7 @@ export async function saveProject(db,project,expectedVersion) {
   });
 }
 export async function restoreCopies(db,projects) {
+  if(db.mode==='cloud')return db.restoreCopies(projects);
   projects.forEach(validateProject);
   const copies=projects.map(p=>({...structuredClone(p),id:uid(),name:(p.name+' · recuperado').slice(0,120),version:1}));
   return new Promise((resolve,reject)=>{

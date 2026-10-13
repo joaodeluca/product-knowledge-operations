@@ -1,0 +1,50 @@
+# Salvamento privado entre dispositivos
+
+A edição web 0.7 acrescenta uma conta pessoal com projetos privados no Supabase. O titular autorizou e criou o recurso Free, definiu suas credenciais e autorizou seu usuário. `site/browser/cloud-config.mjs` contém somente o endereço do projeto e a chave pública publishable. Esses arquivos não criam contas ou contratam planos.
+
+## Resultado proposto
+
+Entre com a mesma conta do Workspace em outro dispositivo para abrir os projetos salvos. O servidor confirma cada gravação; uma versão desatualizada recebe conflito, sem sobrescrever outra edição. Falha de rede mantém o editor e informa que a gravação pode ter chegado ao servidor. Não há sincronização offline automática nem edição colaborativa simultânea.
+
+Originais, histórico, revisões e publicações ficam no projeto privado. A cópia dos projetos locais exige confirmação e conserva os originais neste navegador. O backup JSON continua disponível. A sessão de acesso fica somente na memória da aba: recarregar ou fechar exige entrar novamente, mas não apaga os projetos do servidor. Não há armazenamento de senhas no aplicativo.
+
+## Configuração de uma instalação pessoal
+
+1. Em uma nova instalação, autorizar e criar **uma conta pessoal e um projeto Supabase no plano Free**, sem dados/contas de outra empresa. A criação e os termos devem ser concluídos pelo titular. Não compartilhar senha de banco, token administrativo ou `service_role` no chat ou no aplicativo.
+2. Aplicar `schema.sql` no SQL Editor do novo projeto. Ele cria armazenamento privado e três funções autenticadas. A lista de membros começa vazia: nenhum usuário recebe acesso automaticamente.
+3. Desativar cadastro público e provedores anônimos em Authentication. Criar somente o usuário pessoal do Workspace em Authentication → Users, com senha definida pelo titular e confirmação administrada pelo titular. Não abrir cadastros de terceiros. A conta administrativa Supabase e o usuário do Workspace são identidades separadas.
+4. Copiar o UUID desse usuário (não a senha) e executar no SQL Editor:
+
+   ```sql
+   insert into kw_private.members(user_id) values ('UUID_DO_USUARIO');
+   ```
+
+5. Configurar apenas os dados públicos do projeto: URL `https://…supabase.co` e chave `sb_publishable_…`.
+
+   ```sh
+   python3 scripts/configure_cloud.py --url https://PROJETO.supabase.co --publishable-key sb_publishable_CHAVE_PUBLICA
+   ```
+
+   O comando prepara a configuração e permite somente essa origem no CSP. Não cria recursos nem publica. Para desligar a integração: `python3 scripts/configure_cloud.py --disable`.
+6. Antes de publicar, verificar o projeto hospedado de verdade: login, acesso sem login recusado, conta não autorizada recusada, salvamento/abertura em dois contextos separados, conflito de versão, cópia local consentida, backup e logout. Só depois conferir o candidato e realizar um dispatch manual com `expected_sha` do commit pessoal revisado.
+
+O backend não envia convites, mensagens comerciais ou e-mails de recuperação. Nesta prévia privada, o titular administra recuperação do usuário no painel do provedor. O SMTP padrão do Supabase é limitado a endereços da equipe; acesso público exigiria outro trabalho e autorização, inclusive recuperação por e-mail adequada.
+
+## Dados e limites
+
+- Tabelas no schema privado, sem privilégios para `anon`/`authenticated`, com RLS habilitado. Funções `security definer` têm caminho de busca vazio, identificam o titular por `auth.uid()` e exigem membro habilitado. O cliente não escolhe `owner_id`.
+- Gravação/recuperação valida estrutura, tamanho e identificadores no servidor. Uma transação bloqueia a linha do titular e confere a versão antes de salvar. Recuperação em lote é atômica.
+- Limites da prévia: 20 projetos e 8 MiB de JSON no servidor; 50 artigos/20 publicações por projeto. JSONB pode ocupar um pouco mais que a representação compacta local.
+- A chave pública não concede acesso por si só. Nenhuma chave secreta pode ir ao site, ao repositório ou à configuração do navegador.
+- Não é criptografia ponta a ponta. O titular do projeto e o provedor controlam o armazenamento; backups baixados também contêm dados privados.
+- O plano gratuito pode pausar após uma semana sem atividade. Não promete disponibilidade contínua; manter backup. Não contratar plano pago automaticamente.
+
+## Verificações locais
+
+`node --test scripts/tests/browser-cloud.test.mjs scripts/tests/browser-model.test.mjs` verifica o cliente com respostas HTTP simuladas e as regras editoriais. Não comprova autenticação hospedada.
+
+`test-database.py` aplica a migração a um PostgreSQL descartável vazio e verifica permissões, isolamento entre duas identidades, concorrência, rollback e limites. Exige `KW_TEST_CONTAINER` e usa o ambiente Docker explicitamente fornecido. O teste cria um substituto de `auth.uid()` com claims simulados; não representa o gateway JWT do Supabase. Nunca executar em um banco de produção.
+
+Referências consultadas em 13/10/2026: [Auth com senha](https://supabase.com/docs/guides/auth/passwords), [chaves de API](https://supabase.com/docs/guides/getting-started/api-keys), [segurança por linha](https://supabase.com/docs/guides/database/postgres/row-level-security), [SMTP](https://supabase.com/docs/guides/auth/auth-smtp), [plano Free](https://supabase.com/pricing).
+
+A integração hospedada foi conferida em 13/10/2026 com o login feito pelo titular, duas sessões em origens locais distintas e Supabase real: criação/gravação/leitura compartilhada, conflito recusado, rascunho preservado, cópia local consentida, backup validado e logout de uma sessão sem apagar os projetos. Não representa teste em dois dispositivos físicos, aceitação externa ou auditoria independente.

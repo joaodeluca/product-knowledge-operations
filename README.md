@@ -12,13 +12,13 @@ O ensaio Excalidraw de 04/10 continua parcial: backup e restauração ficaram pe
 
 ## Abrir o Workspace no navegador
 
-**[Abrir a edição web 0.6](https://joaodeluca.github.io/product-knowledge-operations/browser/)** — prévia sem instalação, conta ou chave de IA. Crie um projeto, importe Markdown/texto próprio, edite com prévia, confira cada artigo e baixe uma central HTML com busca que funciona offline.
+**[Abrir a edição web 0.7](https://joaodeluca.github.io/product-knowledge-operations/browser/)** — prévia sem instalação ou chave de IA, com modo local e acesso privado entre dispositivos. Crie um projeto, importe Markdown/texto próprio, edite com prévia, confira cada artigo e baixe uma central HTML com busca que funciona offline.
 
-Os projetos ficam no IndexedDB deste navegador e dispositivo. Nenhum documento é enviado ao servidor. Faça backup JSON privado para guardar originais, histórico, notas e publicações; a recuperação cria novos projetos, sem substituir os existentes. Limpar dados do site ou usar navegação privada pode apagar o trabalho. Não há sincronização automática ou compatibilidade com o backup ZIP da edição Python.
+No modo local, os projetos ficam no IndexedDB deste navegador. No modo conta, ficam no Supabase privado: entre com o mesmo usuário em outro dispositivo para continuar. O cadastro público está fechado; o titular habilita o acesso. Projetos locais só são enviados mediante confirmação em “Copiar projetos locais”. Faça backup JSON privado para guardar originais, histórico, notas e publicações; a recuperação cria novos projetos, sem substituir os existentes. Limpar dados do site ou usar navegação privada pode apagar o trabalho. Não há sincronização offline, edição colaborativa simultânea ou compatibilidade com o backup ZIP Python. A sessão fica só na memória da aba: recarregar exige login novamente. O plano Free pode pausar por inatividade.
 
 Limites da prévia: 20 projetos/8 MiB no total, 50 artigos e 20 publicações por projeto. Markdown básico (títulos, listas, negrito, código e links HTTPS); sem imagens, anexos ou HTML ativo. Revisão é uma declaração do operador, não certificação independente. Edições vencem a revisão do artigo; publicações anteriores permanecem preservadas. Duas abas não podem sobrescrever silenciosamente a mesma versão.
 
-O código estático está em `site/browser/`, sem dependências ou APIs externas. O servidor entrega os arquivos do aplicativo; armazenamento, revisão, busca e geração ocorrem no navegador. A edição local Python abaixo permanece disponível com suas capacidades próprias.
+O código estático está em `site/browser/`, sem bibliotecas externas. O modo conta usa Supabase Auth e funções privadas do banco; somente a chave pública publishable vai ao aplicativo. A interface confirma salvamentos após resposta do servidor e recusa versões desatualizadas. Revisão, busca e geração ocorrem no navegador. A edição local Python abaixo permanece disponível com suas capacidades próprias.
 
 ## Executar o Knowledge Workspace
 
