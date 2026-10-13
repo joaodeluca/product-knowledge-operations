@@ -107,3 +107,7 @@ Editor baseado no [Tiptap](https://tiptap.dev/docs/editor/getting-started/instal
 ### Workspace web 0.13 — publicar só o que está pronto
 
 Cada artigo pode ficar como rascunho ou entrar na próxima publicação. Artigos novos começam como rascunho. Inclua os desejados, confira apenas esses artigos e abra a prévia antes de publicar. A lista distingue seleção para a próxima versão e artigos atualmente no ar. Alterar a seleção não muda o link até confirmar Atualizar publicação; para retirar toda a central, use Retirar do ar. Categorias vazias e aliases de rascunhos ficam fora da versão pública. A seleção acompanha o backup e o salvamento na conta.
+
+### Workspace web 0.14 — páginas de artigos e navegação
+
+A central hospedada abre em uma página inicial por categorias. Cada artigo tem endereço próprio, botão **Copiar link do artigo**, caminho de volta à categoria e navegação anterior/próximo. A busca considera título, texto e categoria, incluindo artigos do editor visual. Links antigos com âncora continuam funcionando. Renomear ou reorganizar um artigo preserva seu endereço; retirar o artigo da publicação torna sua página indisponível em novas aberturas. No Workspace, os artigos no ar oferecem **Abrir artigo** e **Copiar link do artigo**. Rascunhos permanecem privados. Os links usam parâmetros no endereço e funcionam ao recarregar no GitHub Pages, sem hospedagem adicional.

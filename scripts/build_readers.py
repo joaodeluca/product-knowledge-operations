@@ -279,7 +279,7 @@ def compile_tree(root):
     # Fixed original product pages; historical dist and canonical guides stay untouched.
     site = {'site/workspace.html': 'workspace.html', 'site/workspace-site.css': 'workspace-site.css',
             'site/workspace-entry.html': None,
-            **{'site/help/' + name: 'help/' + name for name in ('index.html','style.css','reader.mjs','view.mjs')},
+            **{'site/help/' + name: 'help/' + name for name in ('index.html','style.css','reader.mjs','pages.mjs','view.mjs')},
             **{'site/browser/' + name: 'browser/' + name for name in
                ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs', 'autosave.mjs', 'rich.mjs', 'editor.mjs', 'editor-vendor.mjs', 'editor-licenses.txt')}}
     for source, target in site.items():

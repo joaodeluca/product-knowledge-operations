@@ -177,12 +177,12 @@ function appearance(){
  $('brand-logo').onchange=async()=>{const file=$('brand-logo').files[0];if(!file)return;loading=true;logoInput.disabled=true;$('remove-logo').disabled=true;$('confirm').disabled=true;$('logo-state').textContent='Preparando logo…';try{const logo=await prepareLogo(file);if(!dialog.open||project!==base||$('brand-logo')!==logoInput)return;branding.logo=logo;preview();$('logo-state').textContent='Logo pronto para salvar.';}catch(e){if(dialog.open&&$('brand-logo')===logoInput)$('logo-state').textContent=e.message;}finally{loading=false;if(dialog.open&&$('brand-logo')===logoInput){logoInput.disabled=false;$('remove-logo').disabled=!branding.logo;$('confirm').disabled=false;}}};
  preview();
 }
-function helpURL(meta){const url=new URL('../help/',location.href);url.searchParams.set('id',meta.public_id);return url.href;}
+function helpURL(meta,article){const url=new URL('../help/',location.href);url.searchParams.set('id',meta.public_id);if(article)url.searchParams.set('article',article);return url.href;}
 async function loadPublication(){
  const id=project.id,store=db;
  try{const meta=await store.helpStatus(id);if(db!==store||project?.id!==id||!$('publication-status'))return;publication=meta;publicationReady=true;
   const canPublish=readyToPublish(project);
-  content.querySelectorAll('[data-live]').forEach(el=>{const live=meta?.live&&meta.article_ids?.includes(el.dataset.live);el.textContent=live?'No ar na versão publicada':meta?.live&&!meta.article_ids?'Status por artigo indisponível':'Fora do ar';});
+  content.querySelectorAll('[data-live]').forEach(el=>{const live=meta?.live&&meta.article_ids?.includes(el.dataset.live);el.textContent=live?'No ar na versão publicada':meta?.live&&!meta.article_ids?'Status por artigo indisponível':'Fora do ar';if(live){const a=document.createElement('a');a.href=helpURL(meta,el.dataset.live);a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir artigo ↗';a.className='secondary small';el.parentElement.append(' · ',a);const b=document.createElement('button');b.className='secondary small';b.textContent='Copiar link do artigo';b.onclick=async()=>{const url=helpURL(meta,el.dataset.live);try{await navigator.clipboard.writeText(url);notify('Link do artigo copiado.');}catch{modal('Link do artigo','<input readonly aria-label="Link do artigo" value="'+esc(url)+'">','Fechar',async()=>{});}};el.parentElement.append(' ',b);}});
   $('publish').disabled=!canPublish;$('publish').textContent=meta?.live?'Atualizar publicação →':'Publicar central →';
   const newer=meta&&meta.source_version!==project.version;
   $('publication-status').innerHTML='<h2>'+(meta?.live?'Sua central está publicada':meta?'Central fora do ar':'Compartilhe sua central')+'</h2>'+
