@@ -87,3 +87,7 @@ verificados em 06/10/2026. A leitura nativa dos guias no GitHub permanece
 disponível. Essa entrega não comprova audiência, operação de comprador,
 aceite externo ou benefício econômico. Não foram criadas outra conta,
 assinatura, agenda ou promessa comercial.
+
+### Web 0.10 — identidade visual com prévia
+
+Abra um projeto → **Personalizar aparência** para editar nome, enviar logo PNG/JPEG/WebP e escolher cor principal/fundo do cabeçalho. A prévia acompanha a edição, com opção de largura de celular. **Salvar aparência** guarda na conta; **Atualizar publicação** confirma a versão pública no mesmo link. Cancelar mantém a aparência anterior. Projetos antigos continuam válidos. Logo normalizado, cores validadas, contraste automático do texto; sem hospedagem ou plano pago adicional.

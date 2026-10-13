@@ -62,3 +62,11 @@ Somente `kw_read_help(UUID)` permite execução anônima. Retorna a última vers
 O backup JSON do Workspace conserva projetos e downloads HTML, mas não IDs públicos, status ou histórico hospedado. Recuperação cria projetos privados novos; publicar essas cópias gera novos links. A edição offline e os arquivos históricos permanecem preservados.
 
 `KW_TEST_CONTAINER=CONTAINER_DESCARTAVEL python3 cloud/supabase/test-publication.py` verifica a base e a migração nova em PostgreSQL isolado, com duas identidades simuladas. Inclui privilégio anônimo restrito, dono, revisão/versão, projeção de campos, rascunho privado, atualização estável, retirada, republicação e repetição idempotente. Não equivale a teste no gateway hospedado.
+
+## Aparência da central (0.10)
+
+Após schema.sql e publication.sql, aplique branding.sql uma vez. A migração valida a aparência opcional e inclui apenas logo PNG normalizado e duas cores no próximo snapshot explicitamente publicado; mantém permissões, links e versões anteriores. Projetos legados mantêm o visual padrão. Nenhuma publicação acontece na migração ou ao salvar aparência.
+
+Personalizar aparência altera o nome da central, logo e cores com prévia ampla/celular. Salvar aparência guarda na conta com proteção contra conflito; cancelar descarta a prévia. PNG/JPEG/WebP de até 2 MiB são decodificados e normalizados para PNG de até 512×512, sem URL externa/metadados do original; resultado limitado a 192 KiB incluindo data URL. SVG não é aceito. O servidor valida tipo, tamanho, cabeçalho/dimensões PNG e cores hexadecimais, e a projeção pública usa campos explícitos. Logos contam nas quotas existentes. Texto do cabeçalho e botões usa preto/branco conforme contraste.
+
+Nome e aparência entram também no backup JSON e nos novos downloads HTML. Snapshots já publicados só mudam por Atualizar publicação, no mesmo endereço. Os limites e a dependência do Supabase Free permanecem.

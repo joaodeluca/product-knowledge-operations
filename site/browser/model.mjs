@@ -27,6 +27,7 @@ export function reviewDocument(doc,note) {
   doc.review={revision:doc.revision,note:note.trim(),at:new Date().toISOString()};
 }
 export function validateProject(p) {
+  validateBranding(p?.branding);
   required(p && /^[a-zA-Z0-9-]{1,80}$/.test(p.id) && string(p.name,120) && p.name.trim(), 'Projeto inválido.');
   required(Number.isSafeInteger(p.version) && p.version>=0 && string(p.createdAt,40), 'Versão inválida.');
   required(Array.isArray(p.documents) && p.documents.length<=50 && Array.isArray(p.publications) && p.publications.length<=20, 'Limite: 50 artigos e 20 publicações por projeto.');
@@ -91,8 +92,41 @@ export function markdown(text,docs=[]) {
 }
 export function publicHTML(p) {
   required(p.documents.length>0 && p.documents.every(current),'Revise todos os artigos salvos antes de gerar a central.');
+  const b=theme(p);
   const links=p.documents.map(d=>'<li><a href="#article-'+d.id+'">'+escape(d.title)+'</a></li>').join('');
   const articles=p.documents.map(d=>'<article id="article-'+d.id+'"><h2>'+escape(d.title)+'</h2>'+markdown(d.body,p.documents)+'</article>').join('');
   // Only explicitly public fields enter this document. No originals, notes or history.
-  return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+escape(p.name)+'</title><style>body{max-width:920px;margin:40px auto;padding:0 24px;font:18px/1.65 system-ui;color:#213d36;background:#fafbf8}h1,h2,h3{line-height:1.2}a{color:#236349}input{font:inherit;padding:12px;width:90%;max-width:500px;border:1px solid #70877b;border-radius:8px}article{border-top:1px solid #b4c4b9;padding:28px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#e9f0e9;padding:16px}code{overflow-wrap:anywhere}[hidden]{display:none}</style><header><p>Central de ajuda</p><h1>'+escape(p.name)+'</h1><label for="search">Buscar nesta central</label><br><input id="search" type="search" placeholder="Digite palavras do artigo"><p id="count" role="status"></p><nav aria-label="Artigos"><ul>'+links+'</ul></nav></header><main>'+articles+'</main><footer>Central criada com Knowledge Workspace. Conteúdo revisado pelo operador.</footer><script>const input=document.getElementById("search"),articles=[...document.querySelectorAll("article")],links=[...document.querySelectorAll("nav li")];const norm=s=>s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();input.oninput=()=>{const words=norm(input.value).split(/\\s+/).filter(Boolean);let n=0;articles.forEach((a,i)=>{const show=words.every(w=>norm(a.textContent).includes(w));a.hidden=!show;links[i].hidden=!show;if(show)n++});document.getElementById("count").textContent=n+" artigo(s) encontrado(s)"};<\/script></html>';
+  return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+escape(p.name)+'</title><style>body{max-width:920px;margin:40px auto;padding:0 24px;font:18px/1.65 system-ui;color:#213d36;background:#fafbf8}h1,h2,h3{line-height:1.2}a{color:#236349}input{font:inherit;padding:12px;width:90%;max-width:500px;border:1px solid #70877b;border-radius:8px}article{border-top:1px solid #b4c4b9;padding:28px 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#e9f0e9;padding:16px}code{overflow-wrap:anywhere}[hidden]{display:none}header{border-top:6px solid '+b.primaryColor+';background:'+b.headerColor+';color:'+b.headerText+';padding:28px;border-radius:16px}header a{color:inherit}.help-logo{max-width:180px;height:80px;object-fit:contain;object-position:left}nav a{background:'+b.primaryColor+';color:'+b.primaryText+';display:inline-block;padding:8px;border-radius:8px}input{background:white;color:black}</style><header>'+logoHTML(p)+'<p>Central de ajuda</p><h1>'+escape(p.name)+'</h1><label for="search">Buscar nesta central</label><br><input id="search" type="search" placeholder="Digite palavras do artigo"><p id="count" role="status"></p><nav aria-label="Artigos"><ul>'+links+'</ul></nav></header><main>'+articles+'</main><footer>Central criada com Knowledge Workspace. Conteúdo revisado pelo operador.</footer><script>const input=document.getElementById("search"),articles=[...document.querySelectorAll("article")],links=[...document.querySelectorAll("nav li")];const norm=s=>s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();input.oninput=()=>{const words=norm(input.value).split(/\\s+/).filter(Boolean);let n=0;articles.forEach((a,i)=>{const show=words.every(w=>norm(a.textContent).includes(w));a.hidden=!show;links[i].hidden=!show;if(show)n++});document.getElementById("count").textContent=n+" artigo(s) encontrado(s)"};<\/script></html>';
+}
+
+export const DEFAULT_BRANDING=Object.freeze({primaryColor:'#235e43',headerColor:'#edf3eb',logo:''});
+export function validateBranding(b){
+ if(b===undefined)return;
+ required(b && typeof b==='object' && !Array.isArray(b) && Object.keys(b).every(k=>['primaryColor','headerColor','logo'].includes(k)), 'Aparência inválida.');
+ required(/^#[0-9a-f]{6}$/i.test(b.primaryColor) && /^#[0-9a-f]{6}$/i.test(b.headerColor), 'Use cores no formato #RRGGBB.');
+ required(typeof b.logo==='string' && b.logo.length<=196608,'Logo muito grande. Use uma imagem mais simples.');
+ if(!b.logo)return;
+ required(/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(b.logo) && (b.logo.length-22)%4===0,'Use um logo PNG válido.');
+ const raw=atob(b.logo.slice(22)),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));
+ required(bytes.length>=33 && [...bytes.slice(0,8)].join(',')==='137,80,78,71,13,10,26,10' && raw.slice(12,16)==='IHDR','Logo PNG inválido.');
+ const view=new DataView(bytes.buffer),w=view.getUint32(16),h=view.getUint32(20);
+ required(w>0 && h>0 && w<=512 && h<=512,'Logo deve ter até 512 × 512 pixels.');
+}
+export function contrastText(color){
+ const c=color.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);
+ return .2126*c[0]+.7152*c[1]+.0722*c[2]>.179?'#000000':'#ffffff';
+}
+export function theme(p){validateBranding(p.branding);const b=p.branding||DEFAULT_BRANDING;return {...b,primaryText:contrastText(b.primaryColor),headerText:contrastText(b.headerColor)};}
+export function applyAppearance(root,p){const b=theme(p);for(const [key,value] of Object.entries({primary:b.primaryColor,'primary-text':b.primaryText,header:b.headerColor,'header-text':b.headerText}))root.style.setProperty('--help-'+key,value);}
+export function logoHTML(p){const b=theme(p);return b.logo?'<img class="help-logo" src="'+escape(b.logo)+'" alt="Logo de '+escape(p.name)+'" width="160" height="80">':'';}
+export async function prepareLogo(file){
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>2*1024*1024)throw Error('Escolha PNG, JPEG ou WebP de até 2 MiB.');
+ const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('Não foi possível ler o arquivo.'));reader.readAsDataURL(file);});try{
+  const img=new Image();img.src=data;await img.decode();
+  if(img.naturalWidth*img.naturalHeight>16000000)throw Error('Use um logo com até 16 milhões de pixels.');
+  const scale=Math.min(1,512/img.naturalWidth,512/img.naturalHeight),canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+  canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+  const logo=canvas.toDataURL('image/png');validateBranding({...DEFAULT_BRANDING,logo});return logo;
+ }catch(e){throw Error(e.message.startsWith('Logo')||e.message.startsWith('Use')?e.message:'Não foi possível ler o logo. Escolha outra imagem.');}
 }

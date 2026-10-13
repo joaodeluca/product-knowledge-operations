@@ -1,7 +1,8 @@
+import {renderPublic} from '../help/reader.mjs';
 import {autoSave,sameJSON} from './autosave.mjs';
 import {cloudStore} from './cloud.mjs';
 import {cloudConfig} from './cloud-config.mjs';
-import {escape as esc,uid,newProject,newDocument,changeDocument,reviewDocument,current,markdown,publicHTML,makeBackup,readBackup,validateProject} from './model.mjs';
+import {escape as esc,uid,newProject,newDocument,changeDocument,reviewDocument,current,markdown,publicHTML,makeBackup,readBackup,validateProject,DEFAULT_BRANDING,applyAppearance,prepareLogo} from './model.mjs';
 import {openStore,listProjects,saveProject,restoreCopies} from './storage.mjs';
 const $=id=>document.getElementById(id), content=$('content'),dialog=$('dialog');
 let localDB, db, project=null, dirty=false, modalAction=null, toastTimer, busy=false, actionBusy=false;
@@ -64,10 +65,10 @@ async function projectsView(items){
 }
 function projectView(){
   saver?.stop();saver=null;dirty=false;publication=null;publicationReady=false;const count=project.documents.filter(current).length;
-  content.innerHTML='<button id="back" class="secondary small">← Projetos</button><p class="eyebrow">CENTRAL DE AJUDA</p><div class="page-head"><div><h1>'+esc(project.name)+'</h1><p class="lead">'+project.documents.length+' artigos · '+count+' revisados · '+savedWhere()+'</p></div><button id="publish" '+(!project.documents.length||count!==project.documents.length?'disabled':'')+'>'+(isCloud()?'Publicar central →':'Gerar central ↓')+'</button></div><div class="steps"><span><b>01</b> Importar ou escrever</span><span><b>02</b> Conferir cada artigo</span><span><b>03</b> Publicar e compartilhar</span></div><div class="actions"><button id="import">↑ Importar documentos</button><button id="write" class="secondary">+ Escrever artigo</button><button id="review-next" class="secondary" '+(count===project.documents.length?'disabled':'')+'>Revisar próximo artigo →</button></div>'+
+  content.innerHTML='<button id="back" class="secondary small">← Projetos</button><p class="eyebrow">CENTRAL DE AJUDA</p><div class="page-head"><div><h1>'+esc(project.name)+'</h1><p class="lead">'+project.documents.length+' artigos · '+count+' revisados · '+savedWhere()+'</p></div><button id="publish" '+(!project.documents.length||count!==project.documents.length?'disabled':'')+'>'+(isCloud()?'Publicar central →':'Gerar central ↓')+'</button></div><div class="steps"><span><b>01</b> Importar ou escrever</span><span><b>02</b> Conferir cada artigo</span><span><b>03</b> Publicar e compartilhar</span></div><div class="actions"><button id="import">↑ Importar documentos</button><button id="write" class="secondary">+ Escrever artigo</button><button id="appearance" class="secondary">Personalizar aparência</button><button id="review-next" class="secondary" '+(count===project.documents.length?'disabled':'')+'>Revisar próximo artigo →</button></div>'+
     (project.documents.length?'<section class="panel"><h2>Documentos</h2>'+project.documents.map(d=>'<div class="doc-row"><div><h3>'+esc(d.title)+'</h3><p class="muted">'+esc(d.filename||'Escrito no Workspace')+' · versão '+d.revision+'</p></div><span class="pill '+(current(d)?'':'pending')+'">'+(current(d)?'Revisado':d.review?'Revisão vencida':'Revisão pendente')+'</span><div class="actions"><button class="secondary small" data-edit="'+d.id+'">Editar</button><button class="secondary small" data-review="'+d.id+'">Conferir</button></div></div>').join('')+'</section>':'<div class="empty"><h2>A sua central começa aqui.</h2><p class="muted">Importe arquivos .md ou .txt, ou escreva um artigo. Tudo começa como rascunho.</p></div>')+
     (isCloud()?'<section id="publication-status" class="panel"><h2>Link da sua central</h2><p>Conferindo a publicação…</p></section>':'')+'<section class="panel"><h2>Downloads preservados</h2><button id="export-html" class="secondary small" '+(!project.documents.length||count!==project.documents.length?'disabled':'')+'>Baixar HTML (opcional)</button><p class="muted">Editar um artigo vence sua revisão. Uma central já gerada continua disponível exatamente como foi salva.</p>'+project.publications.slice().reverse().map(pub=>'<div class="doc-row"><div><h3>Central · '+esc(date(pub.at))+'</h3><p class="muted">Versão do projeto '+pub.version+'</p></div><button class="secondary small" data-download="'+pub.id+'">Baixar HTML</button></div>').join('')+(project.publications.length?'':'<p class="muted">Revise todos os artigos para gerar a primeira central.</p>')+'</section>';
-  bind('back',projectsView);bind('import',()=>{$('import-files').value='';$('import-files').click();});bind('write',()=>editor(null));bind('publish',isCloud()?publishLink:exportHTML);bind('export-html',exportHTML);if(isCloud()){$('publish').disabled=true;loadPublication();}
+  bind('appearance',appearance);bind('back',projectsView);bind('import',()=>{$('import-files').value='';$('import-files').click();});bind('write',()=>editor(null));bind('publish',isCloud()?publishLink:exportHTML);bind('export-html',exportHTML);if(isCloud()){$('publish').disabled=true;loadPublication();}
   bind('review-next',()=>review(project.documents.find(d=>!current(d)).id,true));
   content.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editor(b.dataset.edit));
   content.querySelectorAll('[data-review]').forEach(b=>b.onclick=()=>review(b.dataset.review,false));
@@ -120,6 +121,24 @@ function review(id,queue){
     const next=queue&&project.documents.find(d=>!current(d));if(next)setTimeout(()=>review(next.id,true),0);else notify('Revisão salva para esta versão.');
   },true);
 }
+function appearance(){
+ const base=project;let branding=structuredClone(base.branding||DEFAULT_BRANDING),loading=false;
+ modal('Personalizar sua central','<p>Veja as mudanças na hora. Salvar mantém a aparência privada até você publicar ou atualizar a central.</p><div class="appearance-layout"><section class="appearance-fields"><label for="brand-name">Nome do produto / central</label><input id="brand-name" maxlength="120" required value="'+esc(base.name)+'"><label for="brand-logo">Logo do produto</label><input id="brand-logo" type="file" accept="image/png,image/jpeg,image/webp"><p class="muted">PNG, JPEG ou WebP, até 2 MiB. Ajustamos a imagem para até 512 × 512 pixels.</p><button type="button" id="remove-logo" class="secondary small">Remover logo</button><p id="logo-state" role="status"></p><label for="brand-primary">Cor principal</label><input id="brand-primary" type="color" value="'+branding.primaryColor+'"><label for="brand-header">Fundo do cabeçalho</label><input id="brand-header" type="color" value="'+branding.headerColor+'"><p class="muted">A cor do texto se ajusta para manter a leitura.</p><button type="button" id="reset-colors" class="secondary small">Restaurar cores padrão</button></section><section><p class="eyebrow">PRÉVIA ANTES DE PUBLICAR</p><div class="preview-width"><button type="button" id="preview-wide" class="secondary small">Ampla</button><button type="button" id="preview-mobile" class="secondary small">Celular</button></div><div id="appearance-preview" class="appearance-preview help-surface" aria-label="Prévia da aparência"></div><p class="muted">A busca e os links ficam disponíveis na central publicada.</p></section></div>','Salvar aparência',async()=>{
+  if(loading)throw Error('Aguarde a leitura do logo.');if(project!==base)throw Error('O projeto mudou. Reabra a aparência.');
+  const name=$('brand-name').value.trim();if(name===base.name&&sameJSON(branding,base.branding||DEFAULT_BRANDING))return;
+  await commit(p=>{p.name=name;p.branding=structuredClone(branding);});projectView();notify('Aparência salva. Publique para atualizar o link da central.');
+ },true);
+ const logoInput=$('brand-logo');
+ const preview=()=>{const p={...base,name:$('brand-name').value||'Nome do produto',branding,links:base.documents};const root=$('appearance-preview');root.innerHTML=renderPublic(p,true);applyAppearance(root,p);$('remove-logo').disabled=!branding.logo;};
+ $('appearance-preview').onclick=e=>{if(e.target.closest('a'))e.preventDefault();};
+ $('brand-name').oninput=preview;
+ for(const [id,key] of [['brand-primary','primaryColor'],['brand-header','headerColor']])$(id).oninput=()=>{branding[key]=$(id).value;preview();};
+ $('preview-mobile').onclick=()=>{$('appearance-preview').classList.add('mobile-preview');};$('preview-wide').onclick=()=>{$('appearance-preview').classList.remove('mobile-preview');};
+ $('remove-logo').onclick=()=>{branding.logo='';$('brand-logo').value='';$('logo-state').textContent='Logo removido da prévia.';preview();};
+ $('reset-colors').onclick=()=>{branding.primaryColor=DEFAULT_BRANDING.primaryColor;branding.headerColor=DEFAULT_BRANDING.headerColor;$('brand-primary').value=branding.primaryColor;$('brand-header').value=branding.headerColor;preview();};
+ $('brand-logo').onchange=async()=>{const file=$('brand-logo').files[0];if(!file)return;loading=true;logoInput.disabled=true;$('remove-logo').disabled=true;$('confirm').disabled=true;$('logo-state').textContent='Preparando logo…';try{const logo=await prepareLogo(file);if(!dialog.open||project!==base||$('brand-logo')!==logoInput)return;branding.logo=logo;preview();$('logo-state').textContent='Logo pronto para salvar.';}catch(e){if(dialog.open&&$('brand-logo')===logoInput)$('logo-state').textContent=e.message;}finally{loading=false;if(dialog.open&&$('brand-logo')===logoInput){logoInput.disabled=false;$('remove-logo').disabled=!branding.logo;$('confirm').disabled=false;}}};
+ preview();
+}
 function helpURL(meta){const url=new URL('../help/',location.href);url.searchParams.set('id',meta.public_id);return url.href;}
 async function loadPublication(){
  const id=project.id,store=db;
@@ -138,13 +157,13 @@ async function loadPublication(){
 async function publishLink(){
  if(!publicationReady)throw Error('Aguarde a conferência da publicação.');
  const selected=project,previous=publication;publicHTML(selected);
- const preview='<div class="preview publication-preview" aria-label="Prévia da central pública"><h1>'+esc(selected.name)+'</h1>'+selected.documents.map(d=>'<article><h2>'+esc(d.title)+'</h2>'+markdown(d.body,selected.documents)+'</article>').join('')+'</div>';
- modal(previous?.live?'Atualizar a central publicada':'Publicar sua central','<p>Quem tiver o link poderá ler <strong>'+esc(selected.name)+'</strong> e seus '+selected.documents.length+' artigos revisados, sem login. Originais, histórico e notas privadas não serão publicados.</p><p>'+(previous?'O endereço continua o mesmo. Somente esta versão conferida será mostrada.':'O Workspace cria e hospeda o link para você.')+'</p>'+preview+'<label class="check"><input id="publish-check" type="checkbox" required>Conferi a prévia e autorizo publicar estes títulos e textos na internet.</label>',previous?.live?'Atualizar publicação':'Publicar e obter link',async()=>{
+ const preview='<div id="publication-preview" class="preview publication-preview help-surface" aria-label="Prévia da central pública">'+renderPublic({...selected,links:selected.documents},true)+'</div>';
+ modal(previous?.live?'Atualizar a central publicada':'Publicar sua central','<p>Quem tiver o link poderá ler <strong>'+esc(selected.name)+'</strong> , seu logo, suas cores e seus '+selected.documents.length+' artigos revisados, sem login. Originais, histórico e notas privadas não serão publicados.</p><p>'+(previous?'O endereço continua o mesmo. Somente esta versão conferida será mostrada.':'O Workspace cria e hospeda o link para você.')+'</p>'+preview+'<label class="check"><input id="publish-check" type="checkbox" required>Conferi a prévia e autorizo publicar o nome, logo, cores e estes artigos na internet.</label>',previous?.live?'Atualizar publicação':'Publicar e obter link',async()=>{
   if(!$('publish-check').checked)throw Error('Confira e confirme os campos públicos.');
   if(project!==selected)throw Error('O projeto mudou. Feche e confira a prévia novamente.');
   try{await db.publishHelp(selected.id,selected.version,previous?.revision??0);}catch(e){throw Error(e.message+' Feche esta janela e confira a publicação antes de repetir.');}
   projectView();notify('Central publicada. Copie o link para compartilhar.');
- },true);
+ },true);applyAppearance($('publication-preview'),selected);$('publication-preview').onclick=e=>{if(e.target.closest('a'))e.preventDefault();};
 }
 async function exportHTML(){
   const html=publicHTML(project);const url=URL.createObjectURL(new Blob([html.replace(/<script>[\s\S]*?<\/script>/g,'')],{type:'text/html'}));
