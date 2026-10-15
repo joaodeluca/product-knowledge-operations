@@ -1,32 +1,36 @@
-# Product Knowledge Operations
+# Knowledge Workspace
 
-Operação de conhecimento para produtos de software, em validação: aprender procedimentos, preparar ajuda conferida, incorporar sob autorização e acompanhar mudanças. Contratação e cobrança ainda não estão abertas. Nenhum cliente, redução de dúvidas ou economia comprovados.
+Beta por convite para quem mantém a documentação do próprio software: escreva ou importe respostas, escolha os artigos prontos, revise e publique uma central com busca e páginas individuais. Um responsável edita; leitores abrem os links sem conta. A utilidade para outras pessoas, a redução de chamados e a disposição a pagar ainda precisam ser demonstradas. Não há contratação ou cobrança abertas.
 
-**[Abrir a biblioteca de ajuda](https://joaodeluca.github.io/product-knowledge-operations/library.html)** — três guias e arquivos próprios disponíveis por HTTPS, sem depender do Mac. A [leitura dos guias no GitHub](docs/README.md) permanece como alternativa.
+**[Conhecer o Workspace](https://joaodeluca.github.io/product-knowledge-operations/)** · **[Roteiro da primeira central](https://joaodeluca.github.io/product-knowledge-operations/beta.html)** · **[Entrar com acesso já liberado](https://joaodeluca.github.io/product-knowledge-operations/browser/)**
 
-Este repositório contém a apresentação e amostras editoriais originais e independentes. [Transferir e recuperar um projeto OpenRefine](docs/openrefine/TRANSFER.md) entrega fonte fictícia, CSVs, arquivo real de projeto e comparador específico. Importação inicial pela interface; transformação, exportação e recuperação pela API local. A conferência independente cobre recuperação por API em outro workspace. CSV após desfazer perdeu espaços externos: o aceite integral original falhou, mesmo com células recuperadas. Não cobre toda a produção inicial pela interface nem prova vantagem comercial.
+## Acesso à beta e primeiro uso — web 0.15
 
-O ensaio Excalidraw de 04/10 continua parcial: backup e restauração ficaram pendentes naquela amostra. Um recorte próprio distinto de 05/10 conserva cena editável, PNG e recuperação observada em sessão separada; o [novo guia](docs/excalidraw/SAVE-RESTORE.md) e seus quatro arquivos originais preservam essa distinção. Não há vínculo com o fornecedor.
+O acesso individual e a recuperação de senha são administrados pelo responsável pela beta no canal privado já combinado. Não há cadastro público, solicitação automática de convite ou recuperação automática. Nunca envie senha ou documentos privados em issues públicas.
 
-[Validar a configuração correta do Renovate](docs/renovate/VALIDATION.md) responde a uma dúvida pública específica com exemplos próprios executados no validador oficial. Não inclui implantação, autenticação ou manutenção do bot.
+Prepare três a cinco orientações próprias e autorizadas para publicação. Crie um projeto → importe Markdown/texto ou escreva no editor visual → **Incluir na central** nos artigos desejados → **Revisar selecionados** → **Publicar central**, conferir a prévia e confirmar → **Copiar link**. Artigos novos são rascunhos; só os selecionados e revisados entram no link. O painel **Próximo passo** acompanha o estado salvo, sem revisar ou publicar por você.
 
-## Abrir o Workspace no navegador
+Abra o link sem login, teste busca e artigo individual e confira os rascunhos excluídos. Depois, edite uma resposta, aguarde o salvamento, revise e use **Atualizar publicação**: o endereço continua o mesmo. Salvar um rascunho não altera o que os leitores veem. Categorias, logo e cores são opcionais para o primeiro uso.
 
-**[Abrir a edição web 0.9](https://joaodeluca.github.io/product-knowledge-operations/browser/)** — prévia sem instalação ou chave de IA, com conta privada e salvamento automático entre dispositivos. Crie um projeto, importe Markdown/texto próprio, edite com prévia, confira cada artigo e use **Publicar central → Copiar link**. O leitor abre sem login, com busca, sem baixar arquivos ou configurar hospedagem.
+O [roteiro público](https://joaodeluca.github.io/product-knowledge-operations/beta.html) inclui preparação, instruções, obstáculos e retorno. A [ficha local](site/beta-notes.txt) distingue conclusão com/sem ajuda, esforço de preparação, uso real e retorno apenas para testar. Não há envio automático, analytics ou contato externo. Uma meta de 15 minutos é uma hipótese de avaliação, não promessa de desempenho ou resultado já observado.
 
-A publicação mostra o nome da central e o conteúdo dos artigos revisados, após prévia e confirmação. **Atualizar publicação** mantém o mesmo link; salvar rascunhos não muda o que os leitores veem. **Retirar do ar** bloqueia novas leituras; não apaga cópias já feitas. Quem tiver o link pode ler: não é compartilhamento privado, mesmo com a orientação para buscadores não indexarem. Originais, histórico e notas ficam privados. O backup JSON não inclui links nem versões hospedadas; projetos recuperados exigem nova publicação. Cada central aceita até 20 versões publicadas, 2 MiB por versão e 8 MiB de histórico hospedado por conta.
+## Capacidades e limites atuais
 
-Os projetos são criados e salvos na sua conta Supabase. Entre uma vez: o login fica salvo neste navegador e a sessão é renovada quando necessário; a senha não é guardada pelo aplicativo. Use **Sair da conta** em um dispositivo compartilhado. Ao escrever, aguarde **Salvo na sua conta**: mudanças durante uma gravação são enfileiradas. Sem conexão ou em conflito, o texto permanece na aba com aviso e opção de baixar rascunho; não feche até resolver ou guardá-lo. Não há gravação silenciosa em um modo local.
+- Editor visual com títulos, listas, citações, código, links e imagens; importação de Markdown/texto UTF-8. Tiptap é distribuído localmente, com versões e licenças registradas, sem CDN em tempo de uso.
+- Projetos privados na conta, login persistente e salvamento automático com confirmação. Use **Sair da conta** em dispositivos compartilhados. Sem conexão/conflito, preserve a aba ou baixe o rascunho antes de reabrir; não há sincronização offline ou colaboração simultânea.
+- Central com categorias, marca, busca e links estáveis de artigos. Quem tiver o link pode ler; não é compartilhamento privado. **Retirar do ar** impede novas leituras, mas não recolhe cópias anteriores. Não há domínio personalizado ou contas de equipe.
+- 20 projetos/8 MiB por conta; 50 artigos por projeto. Importação até 32 arquivos/512 KiB por lote, 128 KiB por arquivo. Imagens/anexos referenciados na importação não são carregados. Imagens inseridas no editor são reduzidas e integram o limite de 128 KiB por artigo.
+- Até 20 versões hospedadas por central, 2 MiB por versão e 8 MiB de histórico hospedado por conta. A beta não oferece disponibilidade contínua ou suporte com prazo garantido.
+- **Backup privado** JSON guarda originais, rascunhos, notas, histórico e downloads HTML. Não inclui links ou versões hospedadas; a recuperação cria novos projetos e exige nova publicação. Guarde-o em local privado. Não é compatível com o ZIP da edição Python.
+- Revisão é declaração do operador, não certificação independente. A edição vence a revisão daquela versão. Duas abas não podem sobrescrever silenciosamente a mesma versão.
 
-Projetos locais antigos continuam preservados e podem ser copiados pela opção **Importar projetos antigos**, com confirmação. Faça backup JSON privado para guardar originais, histórico, notas e downloads HTML; a recuperação cria novos projetos sem substituir os existentes. O cadastro público está fechado. Não há sincronização offline, edição colaborativa simultânea ou compatibilidade com o backup ZIP Python. O plano Free pode pausar por inatividade.
+## Biblioteca de exemplos preservada
 
-Limites da prévia: 20 projetos/8 MiB no total, 50 artigos e 20 publicações por projeto. Markdown básico (títulos, listas, negrito, código e links HTTPS); sem imagens, anexos ou HTML ativo. Revisão é uma declaração do operador, não certificação independente. Edições vencem a revisão do artigo; publicações anteriores permanecem preservadas. Duas abas não podem sobrescrever silenciosamente a mesma versão.
-
-O código estático está em `site/browser/`, sem bibliotecas externas. O modo conta usa Supabase Auth e funções privadas do banco; somente a chave pública publishable vai ao aplicativo. A interface confirma salvamentos após resposta do servidor e recusa versões desatualizadas. Revisão, busca e geração ocorrem no navegador. A edição local Python abaixo permanece disponível com suas capacidades próprias.
+A [biblioteca pública](https://joaodeluca.github.io/product-knowledge-operations/library.html) contém três guias próprios; não são casos de clientes. O ensaio Excalidraw de 04/10 permanece parcial; o recorte distinto de 05/10 inclui arquivos originais e recuperação observada. No OpenRefine, o CSV após desfazer perdeu espaços externos e o aceite integral original falhou, apesar da recuperação por API. O guia Renovate cobre validação delimitada, sem implantação, autenticação ou manutenção do bot. [Fontes e limites dos guias](docs/README.md).
 
 ## Executar o Knowledge Workspace
 
-[Conhecer o aplicativo e começar](https://joaodeluca.github.io/product-knowledge-operations/workspace.html). A biblioteca e a página inicial dão acesso ao produto; a visão geral guia importação, revisão individual, geração e download da central.
+[Conhecer o aplicativo e começar](https://joaodeluca.github.io/product-knowledge-operations/workspace.html). A edição local abaixo tem fluxo próprio; o roteiro principal da beta é para a edição web.
 
 A [prévia independente do aplicativo](workspace/README.md) permite criar um projeto vazio, importar documentos Markdown próprios em lote com prévia e sem sobrescrita, registrar fontes, revisar artigos e exportar uma central HTML com busca local. Os originais são preservados; a importação não aprova os artigos.
 
@@ -42,7 +46,7 @@ O operador avalia necessidade, entradas disponíveis, possibilidade de reproduzi
 
 ## Conteúdo
 
-- `dist/index.html`: apresentação, limites e preparação local de escopo.
+- `site/workspace.html`: apresentação atual, entregue também em `index.html`; `dist/index.html` histórico preservado.
 - `dist/library.html`: biblioteca com busca e filtros locais para três procedimentos.
 - `dist/excalidraw.html`: novo recorte próprio de 05/10 e arquivos originais.
 - `dist/renovate.html`: leitura da decisão de validação já publicada, sem nova execução do fornecedor.

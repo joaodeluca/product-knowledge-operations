@@ -1,0 +1,13 @@
+import {selectedDocuments,current} from './model.mjs';
+// Derived guidance only: never selects, reviews, saves or publishes content.
+export function nextStep(project,publication=null,status='loading',cloud=true){
+ const chosen=selectedDocuments(project),pending=chosen.filter(d=>!current(d));
+ if(!project.documents.length)return {key:'content',title:'Adicione a primeira resposta',text:'Importe três a cinco arquivos .md ou .txt próprios, ou escreva um artigo. Tudo começa como rascunho.',target:'import',label:'Importar documentos'};
+ if(!chosen.length)return {key:'selection',title:'Escolha os artigos que vão para a central',text:'Use “Incluir na central” nos artigos prontos abaixo. Eles continuam privados até você confirmar a publicação.',target:'selection',label:'Escolher artigos'};
+ if(pending.length)return {key:'review',title:'Confira '+pending.length+' artigo'+(pending.length===1?'':'s')+' selecionado'+(pending.length===1?'':'s'),text:'Leia cada versão, registre sua nota privada e confirme a revisão. Editar um artigo exige conferir novamente.',target:'review-next',label:'Revisar selecionados'};
+ if(!cloud)return {key:'export',title:'Confira a prévia e exporte',text:'Este modo local gera um arquivo HTML. Para hospedar por link, use sua conta da beta.',target:'publish',label:'Gerar central'};
+ if(status!=='ready')return {key:'status',title:status==='error'?'Resolva a consulta da publicação':'Conferindo a publicação',text:status==='error'?'Veja o aviso em “Link da sua central” e tente novamente. Não é possível confirmar o próximo passo enquanto a consulta falhar.':'Seus artigos selecionados estão revisados. Aguarde a consulta do link antes de publicar.',target:status==='error'?'retry-publication':null,label:'Tentar novamente'};
+ if(!publication?.live)return {key:'publish',title:publication?'Publique novamente quando estiver pronto':'Confira a prévia e obtenha seu link',text:'Confira os campos públicos e confirme somente se puderem ficar na internet. Quem tiver o link poderá ler sem conta.',target:'publish',label:'Ver prévia para publicar'};
+ if(publication.source_version!==project.version)return {key:'update',title:'Há alterações privadas posteriores à publicação',text:'O link mantém a versão publicada. Confira a prévia antes de atualizar; notas e outras alterações privadas também podem causar este aviso.',target:'publish',label:'Conferir atualização'};
+ return {key:'live',title:'A central está no ar. Confira como leitor.',text:'Copie o link abaixo e abra em uma janela privada. Teste busca e página de artigo; confira se rascunhos ficaram de fora. Depois, siga o retorno do roteiro para atualizar no mesmo link.',target:'copy-link',label:'Copiar link'};
+}

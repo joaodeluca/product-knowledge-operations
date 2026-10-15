@@ -42,7 +42,7 @@ class ReaderPipelineTest(unittest.TestCase):
         examples=self.ren.parent/'examples'; examples.mkdir(); (examples/'own.json').write_text('{"automerge":false}')
         (self.ren.parent/'OBSERVATIONS.json').write_text('{"synthetic":true}')
         (self.repo/'site').mkdir()
-        for name in ('workspace.html','workspace-site.css','workspace-entry.html'):
+        for name in ('workspace.html','workspace-site.css','workspace-entry.html','beta.html','beta-notes.txt'):
             (self.repo/'site'/name).write_bytes((MODULE.parent.parent/'site'/name).read_bytes())
         (self.repo/'site/browser').mkdir()
         for path in (MODULE.parent.parent/'site/browser').iterdir():
@@ -57,7 +57,10 @@ class ReaderPipelineTest(unittest.TestCase):
 
     def test_product_entry_and_page_are_bound_to_manifest_without_dist_mutation(self):
         original=(self.repo/'dist/library.html').read_bytes();self.build()
-        self.assertIn(b'browser/',(self.out/'library.html').read_bytes())
+        self.assertIn(b'workspace.html',(self.out/'library.html').read_bytes())
+        self.assertEqual((self.out/'index.html').read_bytes(),(self.out/'workspace.html').read_bytes())
+        self.assertEqual((self.out/'beta.html').read_bytes(),(self.repo/'site/beta.html').read_bytes())
+        self.assertEqual((self.out/'beta-notes.txt').read_bytes(),(self.repo/'site/beta-notes.txt').read_bytes())
         self.assertEqual((self.out/'workspace.html').read_bytes(),(self.repo/'site/workspace.html').read_bytes())
         self.assertEqual((self.repo/'dist/library.html').read_bytes(),original)
         for path in (self.repo/'site/workspace.html',self.repo/'site/workspace-entry.html',self.repo/'site/browser/app.mjs',self.repo/'site/help/reader.mjs'):

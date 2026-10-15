@@ -278,15 +278,16 @@ def compile_tree(root):
     require('index.html' in output and 'library.html' in output, 'Existing entry/library required')
     # Fixed original product pages; historical dist and canonical guides stay untouched.
     site = {'site/workspace.html': 'workspace.html', 'site/workspace-site.css': 'workspace-site.css',
-            'site/workspace-entry.html': None,
+            'site/workspace-entry.html': None, 'site/beta.html': 'beta.html', 'site/beta-notes.txt': 'beta-notes.txt',
             **{'site/help/' + name: 'help/' + name for name in ('index.html','style.css','reader.mjs','pages.mjs','view.mjs')},
             **{'site/browser/' + name: 'browser/' + name for name in
-               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs', 'autosave.mjs', 'rich.mjs', 'editor.mjs', 'editor-vendor.mjs', 'editor-licenses.txt')}}
+               ('index.html', 'style.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'cloud.mjs', 'cloud-config.mjs', 'autosave.mjs', 'rich.mjs', 'editor.mjs', 'editor-vendor.mjs', 'editor-licenses.txt', 'onboarding.mjs')}}
     for source, target in site.items():
         raw = read_file(root / source); privacy(raw.decode('utf-8')); inputs[source] = raw
         if target: output[target] = raw
     entry = inputs['site/workspace-entry.html'].decode('utf-8')
-    for target in ('index.html', 'library.html'):
+    output['index.html'] = output['workspace.html']
+    for target in ('library.html',):
         page = output[target].decode('utf-8')
         require(page.count('</head>') == 1 and page.count('</header>') == 1, 'Entry anchors ambiguous')
         page = page.replace('</head>', '<link rel="stylesheet" href="workspace-site.css"></head>')
